@@ -1,4 +1,4 @@
-package com.test.memoapp.ui.theme
+package com.test.memoapp.theme
 
 import androidx.compose.ui.graphics.Color
 

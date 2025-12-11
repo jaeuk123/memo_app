@@ -1,6 +1,5 @@
-package com.test.memoapp.ui.theme
+package com.test.memoapp.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
