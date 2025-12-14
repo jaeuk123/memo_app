@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.compose.compiler)
     kotlin("plugin.serialization")
+    id("com.google.devtools.ksp")
+    alias(libs.plugins.google.hilt.android)
 }
 
 android {
@@ -70,5 +72,23 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+
+    // Kotlin Coroutine
+    implementation(libs.kotlinx.coroutines.core)
+
+    // DaggerHilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    ksp(libs.androidx.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
+
+    // ⭐️ ComposeIcon 라이브러리
+    implementation(libs.androidx.compose.material.icons.core)
+     implementation(libs.androidx.compose.material.icons.extended)
 
 }
