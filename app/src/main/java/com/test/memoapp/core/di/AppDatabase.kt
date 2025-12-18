@@ -1,9 +1,9 @@
-package com.test.memoapp.di
+package com.test.memoapp.core.di
 
 import android.content.Context
 import androidx.room.Room
-import com.test.memoapp.data.AppDatabase
-import com.test.memoapp.data.Memo.MemoDao
+import com.test.memoapp.core.data.AppDatabase
+import com.test.memoapp.memo.data.MemoDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

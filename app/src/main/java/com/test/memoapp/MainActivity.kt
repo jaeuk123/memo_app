@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.test.memoapp.theme.MemoappTheme
+import com.test.memoapp.core.theme.MemoappTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

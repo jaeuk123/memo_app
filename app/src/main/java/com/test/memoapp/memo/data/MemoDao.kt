@@ -1,4 +1,4 @@
-package com.test.memoapp.data.Memo
+package com.test.memoapp.memo.data
 
 import androidx.room.Dao
 import androidx.room.Delete
