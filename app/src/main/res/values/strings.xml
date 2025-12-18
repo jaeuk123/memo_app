@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">memoapp</string>
+    <string name="default_string_title">제목</string>
+    <string name="default_string_add_schedule">일정 +</string>
+    <string name="default_string_confirm">확인</string>
+    <string name="default_string_cancel">취소</string>
+    <string name="default_string_schedule">일정</string>
+    <string name="default_string_tag">태그</string>
 </resources>
