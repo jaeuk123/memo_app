@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,25 +31,31 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.test.memoapp.R
 import com.test.memoapp.core.component.customTextFieldColors
 import com.test.memoapp.core.component.dialog.ConfirmTextDialog
 import com.test.memoapp.core.component.topbar.SaveTopbar
 import com.test.memoapp.memo.write.WriteScreenViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun WriteScreen(onBackClick: () -> Unit, viewModel: WriteScreenViewModel = hiltViewModel()) {
-
     val title by viewModel.title.collectAsStateWithLifecycle()
     val dateText by viewModel.formattedDate.collectAsStateWithLifecycle()
+    val scope  = rememberCoroutineScope()
 
     WriteContent(
         onBackClick,
         title,
         dateText,
         onDateChanged = viewModel::onDateSelected,
-        onTitleChanged = viewModel::onTitleChanged
+        onTitleChanged = viewModel::onTitleChanged,
+        saveEvent = { scope.launch {
+            viewModel.saveMemo()
+        }}
     )
 }
 
@@ -59,6 +66,7 @@ fun WriteContent(
     dateText: String,
     onTitleChanged: (String) -> Unit,
     onDateChanged: (Long) -> Unit,
+    saveEvent: () -> Unit,
 ) {
 
     val addedOptionSchedule = remember { mutableStateOf(false) }
@@ -80,6 +88,7 @@ fun WriteContent(
         SaveTopbar({
             showBackPressDialog.value = true
         }, {
+            saveEvent.invoke()
             println("save button click")
             onBackClick.invoke()
         })
@@ -143,9 +152,11 @@ fun WriteContent(
                         Text(stringResource(R.string.default_string_add_schedule))
                     }
                 else {
-                    Row(modifier = Modifier.clickable {
-                        showDatePickerModal.value = true
-                    }.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Row(modifier = Modifier
+                        .clickable {
+                            showDatePickerModal.value = true
+                        }
+                        .padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.Default.DateRange,
                             contentDescription = stringResource(
@@ -174,5 +185,5 @@ fun WriteContent(
 @Composable
 @Preview
 fun PreviewWriteScreen() {
-    WriteContent({}, "TITLE", "2025-12-25", {}, {})
+    WriteContent({}, "TITLE", "2025-12-25", {}, {},{})
 }
