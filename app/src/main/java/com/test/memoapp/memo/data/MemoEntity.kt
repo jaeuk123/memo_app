@@ -2,6 +2,7 @@ package com.test.memoapp.memo.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverter
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -17,4 +18,22 @@ data class MemoEntity(
     val lastModifyTime : Long = System.currentTimeMillis(),
     // 일정 시간
     val scheduleTime : Long,
+    // memoType
+    val memoType : String
 )
+
+enum class MemoType(val value : String) {
+    Default("D"), Schedule("S") , Todo("T")
+}
+
+class MemoTypeConverter {
+    @TypeConverter
+    fun fromType(type : MemoType) : String {
+        return type.value
+    }
+
+    @TypeConverter
+    fun toType(typeValue : String ) : MemoType {
+        return MemoType.entries.find { it.value == typeValue } ?: MemoType.Default
+    }
+}

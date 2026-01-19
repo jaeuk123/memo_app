@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.test.memoapp.core.data.AppDatabase
 import com.test.memoapp.memo.data.MemoDao
+import com.test.memoapp.memo.data.TagDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,5 +29,10 @@ object DatabaseModule {
     @Provides
     fun provideMemoDao(database: AppDatabase): MemoDao {
         return database.MemoDao()
+    }
+
+    @Provides
+    fun provideTagDao(database: AppDatabase) : TagDao {
+        return database.TagDao()
     }
 }
