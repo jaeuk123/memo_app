@@ -4,7 +4,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BorderColor
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.DisposableEffect
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -18,7 +17,6 @@ import com.test.memoapp.memo.write.WriteScreen
 fun NavGraphBuilder.homeGraph(navController: NavHostController,uiStateManager: AppUiStateManager) {
     navigation<MainRoute.Graph>(startDestination = MainRoute.Home::class) {
         composable<MainRoute.Home> {
-
             DisposableEffect(Unit) {
                 uiStateManager.updateBottomBarVisibility(true)
 
@@ -37,8 +35,6 @@ fun NavGraphBuilder.homeGraph(navController: NavHostController,uiStateManager: A
         }
 
         composable<MainRoute.Write> {
-            val uiStateManager: AppUiStateManager = hiltViewModel()
-
             DisposableEffect(Unit) {
                 uiStateManager.updateBottomBarVisibility(false)
                 uiStateManager.updateFab(null)

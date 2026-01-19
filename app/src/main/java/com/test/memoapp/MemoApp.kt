@@ -16,15 +16,13 @@ import com.test.memoapp.core.navigatiton.MainRoute
 fun MemoApp(
 ) {
     val navController = rememberNavController()
-
     val uiStateManager: AppUiStateManager = hiltViewModel()
-
     val uiState by uiStateManager.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         bottomBar = {
             if (uiState.showBottomBar) {
-                MainScreenBottomBar()
+                MainScreenBottomBar(navController)
             }
         },
         floatingActionButton = {

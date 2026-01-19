@@ -1,6 +1,7 @@
 package com.test.memoapp.core.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -18,13 +19,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.test.memoapp.core.navigatiton.BottomNavItem
 import com.test.memoapp.core.navigatiton.Route
 
 @Composable
-fun MainScreenBottomBar() {
-    val navController = rememberNavController()
+fun MainScreenBottomBar(navController : NavHostController) {
     BottomAppBar(
         contentPadding = PaddingValues(0.dp),
         windowInsets = WindowInsets.navigationBars
@@ -73,7 +74,9 @@ private fun BottomNavItemView(
     text: String
 ) {
     val colorSelected = if (isSelected) Color.Black else Color.Gray
-    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(modifier = modifier.clickable {
+        navController.navigate(route)
+    }, horizontalAlignment = Alignment.CenterHorizontally) {
         Icon(imageVector = imageVector, tint = colorSelected, contentDescription = "")
         Text(text, color = colorSelected)
     }
@@ -82,5 +85,5 @@ private fun BottomNavItemView(
 @Composable
 @Preview
 private fun PreviewBottomNaviBar() {
-    MainScreenBottomBar()
+    MainScreenBottomBar(rememberNavController())
 }
