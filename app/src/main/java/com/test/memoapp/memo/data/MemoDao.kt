@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -17,4 +18,10 @@ interface MemoDao {
 
     @Delete
     suspend fun deleteMemo(memo : MemoEntity)
+
+    @Update
+    suspend fun updateMemo(memo: MemoEntity)
+
+    @Query("SELECT * FROM memos Where memoId = :memoId")
+    fun getMemoById(memoId : Long) : MemoEntity?
 }

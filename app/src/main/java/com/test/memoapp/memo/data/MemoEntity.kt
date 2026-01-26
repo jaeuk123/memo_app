@@ -9,15 +9,15 @@ import kotlinx.serialization.Serializable
 @Entity(tableName = "memos")
 data class MemoEntity(
     @PrimaryKey(autoGenerate = true)
-    val memoId: Int = 0,
+    val memoId: Long = 0L,
 
     val title:String,
-//    val content: String,
+    val content: String = "",
 
-    // 마지막 수정시간
+    // 마지막 수정 시간
     val lastModifyTime : Long = System.currentTimeMillis(),
     // 일정 시간
-    val scheduleTime : Long,
+    val scheduleTime : Long = 0L,
     // memoType
     val memoType : String
 )
