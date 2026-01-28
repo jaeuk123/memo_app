@@ -44,8 +44,8 @@ fun NavGraphBuilder.homeGraph(navController: NavHostController, uiStateManager: 
                 uiStateManager.updateFab(null)
                 onDispose { }
             }
-            val itemId = backStackEntry.toRoute<MainRoute.Write>().memoId ?: -1L
-            WriteScreen(onBackClick = { navController.popBackStack() }, itemId = itemId)
+            val memoId = backStackEntry.toRoute<MainRoute.Write>().memoId ?: -1L
+            WriteScreen(onBackClick = { navController.popBackStack() }, memoId = memoId)
         }
     }
 }

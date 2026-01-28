@@ -14,7 +14,7 @@ interface MemoDao {
     fun getAllMemos() : Flow<List<MemoEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertMemo(memo: MemoEntity)
+    suspend fun insertMemo(memo: MemoEntity) : Long
 
     @Delete
     suspend fun deleteMemo(memo : MemoEntity)
@@ -24,4 +24,7 @@ interface MemoDao {
 
     @Query("SELECT * FROM memos Where memoId = :memoId")
     fun getMemoById(memoId : Long) : MemoEntity?
+
+    @Query("SELECT * FROM memos Where scheduleTime >= :startOfDay AND scheduleTime <= :endOfDay ORDER BY scheduleTime ASC")
+    fun getMemoByTime(startOfDay : Long , endOfDay : Long) : Flow<List<MemoEntity>>
 }

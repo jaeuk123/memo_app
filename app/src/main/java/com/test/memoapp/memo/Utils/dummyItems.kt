@@ -17,7 +17,7 @@ object DummyItems {
         TagEntity(tagId = 3, tagName = "태그3")
     )
 
-    val  selected = setOf<Long>(1,3)
+    val  selected = mutableSetOf<Long>(1,3)
 
     val memo = MemoEntity(
         memoId = 1,

@@ -21,12 +21,14 @@ import com.test.memoapp.memo.Utils.DummyItems
 import com.test.memoapp.memo.data.TagEntity
 
 @Composable
-fun TagSelector(allTags: List<TagEntity>, selectTags: Set<Long> = setOf<Long>(), onTagToggle: (Long) -> Unit) {
+fun TagSelector(
+    allTags: List<TagEntity>,
+    selectTags: Set<Long>,
+    onTagToggle: (Long) -> Unit
+) {
     FlowRow(
         modifier = Modifier
-            .fillMaxWidth()
-//            .padding(16.dp)
-        ,
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
@@ -35,7 +37,9 @@ fun TagSelector(allTags: List<TagEntity>, selectTags: Set<Long> = setOf<Long>(),
 
             FilterChip(
                 selected = isSelected,
-                onClick = { onTagToggle(tagId) },
+                onClick = {
+                    onTagToggle.invoke(tagId)
+                },
                 label = {
                     Text(text = tagName, color = Color.Black)
                 },
@@ -48,11 +52,11 @@ fun TagSelector(allTags: List<TagEntity>, selectTags: Set<Long> = setOf<Long>(),
                             modifier = Modifier.size(FilterChipDefaults.IconSize)
                         )
                     }
-                } else  null,
+                } else null,
 
                 colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer ,
-                     selectedLabelColor = MaterialTheme.colorScheme.primaryContainer
+                    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                    selectedLabelColor = MaterialTheme.colorScheme.primaryContainer
                 )
             )
         }
@@ -62,5 +66,5 @@ fun TagSelector(allTags: List<TagEntity>, selectTags: Set<Long> = setOf<Long>(),
 @Composable
 @Preview
 private fun previewTagSelecter() {
-    TagSelector(allTags = DummyItems.tagList, selectTags = DummyItems.selected ,{} )
+    TagSelector(allTags = DummyItems.tagList, selectTags = DummyItems.selected, {})
 }

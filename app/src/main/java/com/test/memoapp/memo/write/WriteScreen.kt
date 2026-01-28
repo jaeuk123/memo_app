@@ -55,12 +55,11 @@ import com.test.memoapp.core.component.dialog.TimeSelectDialog
 import com.test.memoapp.core.component.topbar.SaveTopbar
 import com.test.memoapp.memo.component.TagSelector
 import com.test.memoapp.memo.data.TagEntity
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 
 @Composable
-fun WriteScreen(itemId : Long ,onBackClick: () -> Unit, viewModel: WriteScreenViewModel = hiltViewModel()) {
+fun WriteScreen(memoId : Long ,onBackClick: () -> Unit, viewModel: WriteScreenViewModel = hiltViewModel()) {
     val title by viewModel.title.collectAsStateWithLifecycle()
     val dateText by viewModel.formattedDate.collectAsStateWithLifecycle()
     val content by viewModel.content.collectAsStateWithLifecycle()
@@ -68,7 +67,7 @@ fun WriteScreen(itemId : Long ,onBackClick: () -> Unit, viewModel: WriteScreenVi
     val scheduleTime by viewModel.scheduleTime.collectAsStateWithLifecycle()
     val scheduleOption by viewModel.scheduleOption.collectAsStateWithLifecycle()
     val allTags by viewModel.allTags.collectAsStateWithLifecycle()
-//    val selectTags by viewModel.selectTags.collectAsStateWithLifecycle()
+    val selectTags by viewModel.selectTags.collectAsStateWithLifecycle()
 
     val writeFormState = WriteFormState(
         title = title,
@@ -78,6 +77,7 @@ fun WriteScreen(itemId : Long ,onBackClick: () -> Unit, viewModel: WriteScreenVi
         scheduleTime = scheduleTime,
         scheduleOption = scheduleOption,
         allTags = allTags,
+        selectTags = selectTags
     )
 
     WriteContent(
@@ -303,8 +303,8 @@ fun WriteContent(
                             Icon(imageVector = Icons.Default.Add, contentDescription = null)
                         }
                     }
-                    TagSelector(writeFormState.allTags,) {
-
+                    TagSelector(writeFormState.allTags,writeFormState.selectTags) { tagId ->
+                        onAction(EventAction.tagToggle(tagId))
                     }
                 }
 
@@ -326,7 +326,8 @@ private fun PreviewWriteScreen() {
             todoOption = false,
             scheduleTime = LocalTime.of(0, 0),
             false,
-            listOf(tagEntity,tagEntity,tagEntity,tagEntity,tagEntity,tagEntity,tagEntity,tagEntity)
+            listOf(tagEntity,tagEntity,tagEntity,tagEntity,tagEntity,tagEntity,tagEntity,tagEntity),
+            selectTags = mutableSetOf()
         ), {})
 }
 
@@ -338,7 +339,8 @@ data class WriteFormState(
     val todoOption: Boolean,
     val scheduleTime: LocalTime,
     val scheduleOption: Boolean,
-    val allTags : List<TagEntity>
+    val allTags : List<TagEntity>,
+    val selectTags : Set<Long>
 )
 
 sealed class EventAction {
@@ -350,4 +352,5 @@ sealed class EventAction {
     data class onTimeSelected(val time: LocalTime) : EventAction()
     data class scheduleOptionChanged(val scheduleOption: Boolean) : EventAction()
     data class addTags(val tagName: String) : EventAction()
+    data class tagToggle(val tagId : Long) : EventAction()
 }
