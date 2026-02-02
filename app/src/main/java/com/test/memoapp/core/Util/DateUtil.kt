@@ -17,6 +17,7 @@ object DateFormatUtils {
     }
 
     fun timeFormatPattern() = DateTimeFormatter.ofPattern("HH : mm");
+    fun DateFormatPattern() = DateTimeFormatter.ofPattern("yyyy-mm-dd");
 
     fun convertLongToDate(dateMillis: Long): LocalDate {
         val date = Instant.ofEpochMilli(dateMillis)
@@ -37,8 +38,14 @@ object DateFormatUtils {
             .toInstant()
             .toEpochMilli()
     }
+
+    fun convertLocalTimeToLong(firstDay: LocalDate) : Long {
+        return firstDay.atStartOfDay(ZoneId.systemDefault())
+            .toInstant()
+            .toEpochMilli()
+    }
 }
 
 enum class DateConvertType(val pattern: String) {
-    DEFAULT("yyyy-MM-dd"), KR("yyyy년 MM월 dd일")
+    DEFAULT("yyyy-MM-dd"), KR("yyyy년 MM월 dd일") , MonthDate("MM-dd") , Date("d일\nhh:mm")
 }

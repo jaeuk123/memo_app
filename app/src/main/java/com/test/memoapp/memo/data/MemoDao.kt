@@ -27,4 +27,7 @@ interface MemoDao {
 
     @Query("SELECT * FROM memos Where scheduleTime >= :startOfDay AND scheduleTime <= :endOfDay ORDER BY scheduleTime ASC")
     fun getMemoByTime(startOfDay : Long , endOfDay : Long) : Flow<List<MemoEntity>>
+
+    @Query("SELECT * FROM memos ORDER BY lastModifyTime DESC LIMIT 5")
+    fun getRecentModifyMemo() : Flow<List<MemoEntity>>
 }

@@ -40,6 +40,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.test.memoapp.core.component.dialog.TextFieldSaveDialog
 import com.test.memoapp.memo.Utils.DummyItems
 import com.test.memoapp.memo.Utils.getSectionShape
+import com.test.memoapp.memo.component.LastWriteMemoContents
 import com.test.memoapp.memo.component.ScheduleContents
 import com.test.memoapp.memo.component.TagsContents
 import com.test.memoapp.memo.data.MemoEntity
@@ -48,7 +49,8 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(modifyMemoNavigate: (Long) -> Unit, viewModel: HomeListViewModel = hiltViewModel()) {
-    val memos = viewModel.memos.collectAsStateWithLifecycle()
+    val todayMemos = viewModel.todayMemos.collectAsStateWithLifecycle()
+    val recentMemos = viewModel.recentModifyMemos.collectAsStateWithLifecycle()
     val tags = viewModel.tags.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
 
@@ -60,7 +62,8 @@ fun HomeScreen(modifyMemoNavigate: (Long) -> Unit, viewModel: HomeListViewModel 
     }
 
     HomeListContent(
-        memos.value,
+        recentMemos.value,
+        todayMemos.value,
         tags.value,
         { result -> tagSaveEvent.invoke(result) },
         modifyMemoNavigate
@@ -69,6 +72,7 @@ fun HomeScreen(modifyMemoNavigate: (Long) -> Unit, viewModel: HomeListViewModel 
 
 @Composable
 fun HomeListContent(
+    recentMemos: List<MemoEntity>,
     memos: List<MemoEntity>,
     tags: List<TagEntity>,
     tagSaveEvent: (String) -> Unit,
@@ -85,23 +89,33 @@ fun HomeListContent(
             }, {
                 tagDialogVisible = false
             })
-        Row(modifier = Modifier
-            .padding(paddingValues)
-            .pointerInput(Unit) {
-                detectTapGestures { onTap -> { modifyOnItem = null } }
-            }) {
+        Row(
+            modifier = Modifier
+                .padding(paddingValues)
+                .pointerInput(Unit) {
+                    detectTapGestures { onTap -> { modifyOnItem = null } }
+                }) {
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
             ) {
-                //TodoSection
+                //LastWriteSection
                 stickyHeader {
-                    ItemsTitleText("Todo", {})
+                    ItemsTitleText("LastWrite", {})
                     Spacer(modifier = Modifier.height(5.dp))
                 }
-                itemsIndexed(memos) { index, item ->
+                itemsIndexed(recentMemos) { index, item ->
                     val shape = getSectionShape(index, memos.size)
-                    TodoContents(text = item.title, shape = shape)
+                    Box(modifier = Modifier.combinedClickable(true, onClick = {}, onLongClick = {
+                        modifyOnItem = item.memoId
+                    })) {
+                        LastWriteMemoContents(
+                            text = item.title,
+                            shape = shape,
+                            time = item.scheduleTime,
+                            isVisible = (item.memoId == modifyOnItem),
+                            navigateModify = { navigateModify(item.memoId) })
+                    }
 
                     if (index == memos.lastIndex) {
                         Spacer(modifier = Modifier.height(16.dp))
@@ -121,7 +135,7 @@ fun HomeListContent(
                             item.scheduleTime,
                             shape = shape,
                             isVisible = (item.memoId == modifyOnItem),
-                            {navigateModify(item.memoId)}
+                            { navigateModify(item.memoId) }
                         )
                     }
 
@@ -140,7 +154,7 @@ fun HomeListContent(
                 }
                 itemsIndexed(tags) { index, item ->
                     val shape = getSectionShape(index, tags.size)
-                    TagsContents(text = item.tagName, shape = shape,{})
+                    TagsContents(text = item.tagName, shape = shape, {})
 
                     if (index == tags.lastIndex) {
                         Spacer(modifier = Modifier.height(16.dp))
@@ -190,7 +204,6 @@ fun TodoContents(text: String, shape: Shape) {
         shape = shape,
         color = Color.White,
     ) {
-        var checked by remember { mutableStateOf(false) }
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = text,
@@ -198,7 +211,6 @@ fun TodoContents(text: String, shape: Shape) {
                     .padding(16.dp)
                     .weight(1f)
             )
-            Checkbox(checked = checked, onCheckedChange = { checked = !checked })
         }
     }
 }
@@ -240,5 +252,5 @@ private fun ItemsTitleText(
 @Composable
 @Preview
 fun HomeScreenPreview() {
-    HomeListContent(DummyItems.memoList, DummyItems.tagList, {},{})
+    HomeListContent(DummyItems.memoList, DummyItems.memoList, DummyItems.tagList, {}, {})
 }

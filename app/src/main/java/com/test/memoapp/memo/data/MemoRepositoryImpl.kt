@@ -40,6 +40,10 @@ class MemoRepositoryImpl @Inject constructor(
     override suspend fun insertMemoTagCrossRef(crossRef: MemoTagCrossRef) {
         memoTagDao.insertMemoTagCrossRef(crossRef)
     }
+
+    override fun getRecentModifyMemo(): Flow<List<MemoEntity>> {
+        return memoDao.getRecentModifyMemo()
+    }
 }
 
 interface MemoRepository {
@@ -57,4 +61,6 @@ interface MemoRepository {
     suspend fun getMemoById(memoId: Long) : MemoEntity?
 
     suspend fun insertMemoTagCrossRef(crossRef: MemoTagCrossRef)
+
+    fun getRecentModifyMemo() : Flow<List<MemoEntity>>
 }
