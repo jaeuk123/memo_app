@@ -47,5 +47,5 @@ object DateFormatUtils {
 }
 
 enum class DateConvertType(val pattern: String) {
-    DEFAULT("yyyy-MM-dd"), KR("yyyy년 MM월 dd일") , MonthDate("MM-dd") , Date("d일\nhh:mm")
+    DEFAULT("yyyy-MM-dd"), KR("yyyy년 MM월 dd일") , MonthDate("MM-dd") , time("H:mm"), DATETIME("yyyy-MM-dd \n HH:mm")
 }

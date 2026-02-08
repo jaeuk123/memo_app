@@ -20,8 +20,12 @@ sealed interface MainRoute : Route {
     data object Graph : MainRoute
 
     @Serializable data object Home : MainRoute
-    @Serializable data object Write : MainRoute
     @Serializable data object Settings : MainRoute
+
+    @Serializable data class Write(val memoId: Long? = null) : MainRoute
+    @Serializable data class Detail(val memoId: Long? = null) : MainRoute
+    @Serializable data class TagMemoList(val tagId : Long? = null) : MainRoute
+    @Serializable data object LastWriteList : MainRoute
 }
 
 sealed class BottomNavItem(
@@ -31,7 +35,7 @@ sealed class BottomNavItem(
 ) {
     object Home : BottomNavItem(MainRoute.Home, "Home", Icons.Default.Home)
     object Calendar : BottomNavItem(CalendarRoute.Calendar , "Calendar", Icons.Default.DateRange)
-    object Settings : BottomNavItem(SettingsRoute.Home, "Settings", Icons.Default.Settings)
+    object Settings : BottomNavItem(SettingsRoute.SettingsHome, "Settings", Icons.Default.Settings)
 }
 
 val bottomNavItem = listOf(

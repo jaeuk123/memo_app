@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -36,7 +37,7 @@ class WriteScreenViewModel @Inject constructor(
     private val repository: MemoRepositoryImpl
 ) : ViewModel() {
     val title = savedStateHandle.getStateFlow(key = "title", initialValue = "")
-    val scheduleDate = savedStateHandle.getStateFlow<Long>("date", System.currentTimeMillis())
+    val scheduleDate = savedStateHandle.getStateFlow("date", System.currentTimeMillis())
     val content = savedStateHandle.getStateFlow(key = "content", initialValue = "")
     val todoOption = savedStateHandle.getStateFlow(key = "todoOption", initialValue = false)
     val scheduleOption = savedStateHandle.getStateFlow(key = "scheduleOption", initialValue = false)
@@ -69,13 +70,18 @@ class WriteScreenViewModel @Inject constructor(
         val loadMemo = repository.getMemoById(loadMemoId!!)
         loadMemo?.let { (memoId, title, content, lastModifyTime, scheduleTime, memoType) ->
             savedStateHandle["title"] = title
-            println("title = ${title}")
             if (scheduleTime != 0L) {
                 savedStateHandle["scheduleOption"] = true
-                savedStateHandle["scheduleTime"] = scheduleTime
+                savedStateHandle["scheduleTime"] = DateFormatUtils.convertLongToTime(scheduleTime)
             }
             savedStateHandle["memoType"] = memoType
             savedStateHandle["content"] = content
+        }
+
+        repository.getMemoWithTags(loadMemoId).first()?.tags?.forEach { (tagId, tagName) ->
+            selectTags.update {
+                selectTags.value + tagId
+            }
         }
     }
 

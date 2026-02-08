@@ -12,9 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Launch
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -33,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -48,7 +48,13 @@ import com.test.memoapp.memo.data.TagEntity
 import kotlinx.coroutines.launch
 
 @Composable
-fun HomeScreen(modifyMemoNavigate: (Long) -> Unit, viewModel: HomeListViewModel = hiltViewModel()) {
+fun HomeScreen(
+    modifyMemoNavigate: (Long) -> Unit,
+    detailMemoNavigate: (Long) -> Unit,
+    tagMemoNavigate : (Long) -> Unit,
+    lastWriteNavigate : () -> Unit,
+    viewModel: HomeListViewModel = hiltViewModel()
+) {
     val todayMemos = viewModel.todayMemos.collectAsStateWithLifecycle()
     val recentMemos = viewModel.recentModifyMemos.collectAsStateWithLifecycle()
     val tags = viewModel.tags.collectAsStateWithLifecycle()
@@ -66,7 +72,10 @@ fun HomeScreen(modifyMemoNavigate: (Long) -> Unit, viewModel: HomeListViewModel 
         todayMemos.value,
         tags.value,
         { result -> tagSaveEvent.invoke(result) },
-        modifyMemoNavigate
+        modifyMemoNavigate,
+        detailMemoNavigate,
+        lastWriteNavigate ,
+        tagMemoNavigate
     )
 }
 
@@ -76,7 +85,10 @@ fun HomeListContent(
     memos: List<MemoEntity>,
     tags: List<TagEntity>,
     tagSaveEvent: (String) -> Unit,
-    navigateModify: (Long) -> Unit
+    navigateModify: (Long) -> Unit,
+    navigateDetail: (Long) -> Unit,
+    lastWriteNavigate: () -> Unit,
+    tagMemoNavigate: (Long) -> Unit
 ) {
     var modifyOnItem by remember { mutableStateOf<Long?>(null) }
 
@@ -101,14 +113,19 @@ fun HomeListContent(
             ) {
                 //LastWriteSection
                 stickyHeader {
-                    ItemsTitleText("LastWrite", {})
+                    ItemsTitleText("LastWrite", goAllList = lastWriteNavigate, goAllOption = true)
                     Spacer(modifier = Modifier.height(5.dp))
                 }
                 itemsIndexed(recentMemos) { index, item ->
                     val shape = getSectionShape(index, memos.size)
-                    Box(modifier = Modifier.combinedClickable(true, onClick = {}, onLongClick = {
-                        modifyOnItem = item.memoId
-                    })) {
+                    Box(
+                        modifier = Modifier.combinedClickable(
+                            true,
+                            onClick = { navigateDetail(item.memoId) },
+                            onLongClick = {
+                                modifyOnItem = item.memoId
+                            })
+                    ) {
                         LastWriteMemoContents(
                             text = item.title,
                             shape = shape,
@@ -117,7 +134,7 @@ fun HomeListContent(
                             navigateModify = { navigateModify(item.memoId) })
                     }
 
-                    if (index == memos.lastIndex) {
+                    if (index == recentMemos.lastIndex) {
                         Spacer(modifier = Modifier.height(16.dp))
                     }
                 }
@@ -139,8 +156,21 @@ fun HomeListContent(
                         )
                     }
 
-                    if (index == tags.lastIndex) {
+                    if (index == memos.lastIndex) {
                         Spacer(modifier = Modifier.height(16.dp))
+                    }
+                }
+
+                if (memos.isEmpty()) {
+                    item {
+                        Text(
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(4.dp),
+                            text = "오늘 일정이 없습니다.",
+                            textAlign = TextAlign.Center
+                        )
                     }
                 }
 
@@ -148,13 +178,16 @@ fun HomeListContent(
                 stickyHeader {
                     ItemsTitleText(
                         "Tags",
-                        {},
                         addOption = true,
-                        addClickEvent = { tagDialogVisible = true })
+                        addClickEvent = { tagDialogVisible = true },
+                        goAllOption = false
+                    )
                 }
                 itemsIndexed(tags) { index, item ->
                     val shape = getSectionShape(index, tags.size)
-                    TagsContents(text = item.tagName, shape = shape, {})
+                    TagsContents(text = item.tagName, shape = shape, {
+                        tagMemoNavigate(item.tagId)
+                    })
 
                     if (index == tags.lastIndex) {
                         Spacer(modifier = Modifier.height(16.dp))
@@ -218,9 +251,10 @@ fun TodoContents(text: String, shape: Shape) {
 @Composable
 private fun ItemsTitleText(
     title: String,
-    modifyClickEvent: () -> Unit,
     addClickEvent: () -> Unit = {},
-    addOption: Boolean = false
+    addOption: Boolean = false,
+    goAllList: () -> Unit = {},
+    goAllOption: Boolean = false
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
@@ -237,13 +271,14 @@ private fun ItemsTitleText(
                 )
             }
         }
-
-        IconButton(onClick = modifyClickEvent) {
-            Icon(
-                imageVector = Icons.Default.Settings,
-                contentDescription = "",
-                modifier = Modifier.padding(end = 8.dp)
-            )
+        if (goAllOption) {
+            IconButton(onClick = goAllList) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.Launch,
+                    contentDescription = "",
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+            }
         }
     }
 }
@@ -252,5 +287,13 @@ private fun ItemsTitleText(
 @Composable
 @Preview
 fun HomeScreenPreview() {
-    HomeListContent(DummyItems.memoList, DummyItems.memoList, DummyItems.tagList, {}, {})
+    HomeListContent(
+        DummyItems.memoList,
+        DummyItems.memoList,
+        DummyItems.tagList,
+        {},
+        {},
+        {},
+        {}
+    ) {}
 }

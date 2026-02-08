@@ -19,7 +19,7 @@ import com.test.memoapp.core.component.customTextFieldColors
 
 @Composable
 fun TextFieldSaveDialog(text: String, confirm: (String) -> Unit, onDismiss: () -> Unit) {
-    var textFieldValue by remember { mutableStateOf("123") }
+    var textFieldValue by remember { mutableStateOf("") }
 
     AlertDialog(
         onDismissRequest = onDismiss,

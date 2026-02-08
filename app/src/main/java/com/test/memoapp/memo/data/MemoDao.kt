@@ -1,5 +1,6 @@
 package com.test.memoapp.memo.data
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -16,8 +17,8 @@ interface MemoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMemo(memo: MemoEntity) : Long
 
-    @Delete
-    suspend fun deleteMemo(memo : MemoEntity)
+    @Query("DELETE  FROM memos WHERE memoId = :memoId")
+    suspend fun deleteMemo(memoId : Long) : Int
 
     @Update
     suspend fun updateMemo(memo: MemoEntity)
@@ -28,6 +29,9 @@ interface MemoDao {
     @Query("SELECT * FROM memos Where scheduleTime >= :startOfDay AND scheduleTime <= :endOfDay ORDER BY scheduleTime ASC")
     fun getMemoByTime(startOfDay : Long , endOfDay : Long) : Flow<List<MemoEntity>>
 
-    @Query("SELECT * FROM memos ORDER BY lastModifyTime DESC LIMIT 5")
+    @Query("SELECT * FROM memos ORDER BY lastModifyTime DESC LIMIT 3")
     fun getRecentModifyMemo() : Flow<List<MemoEntity>>
+
+    @Query("SELECT * FROM memos ORDER BY lastModifyTime DESC")
+    fun getMemosPaging() : PagingSource<Int , MemoEntity>
 }

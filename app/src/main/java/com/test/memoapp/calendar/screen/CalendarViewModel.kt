@@ -5,10 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.test.memoapp.core.Util.DateFormatUtils
+import com.test.memoapp.memo.data.MemoEntity
 import com.test.memoapp.memo.data.MemoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -45,6 +47,7 @@ class CalendarViewModel @Inject constructor(
     val daySelected = savedStateHandle.getStateFlow("daySelected", initialValue = false)
 
 
+
     val monthSchedule = calendarEndDay.flatMapLatest { month ->
         repository.getMemoByTime(calendarFirstDay.value, calendarEndDay.value)
     }.stateIn(
@@ -52,6 +55,15 @@ class CalendarViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
+
+
+    val scheduleMap: StateFlow<Map<Int, List<MemoEntity>>> = monthSchedule.map { list ->
+        list.groupBy { entity ->
+//            entity.scheduleTime
+            DateFormatUtils.convertLongToDate(entity.scheduleTime).dayOfMonth
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyMap())
+
 //    val monthSchedule = repository.getMemoByTime(calendarFirstDay.value, calendarEndDay.value)
 //        .stateIn(
 //            started = SharingStarted.WhileSubscribed(5000),
@@ -89,15 +101,18 @@ class CalendarViewModel @Inject constructor(
     fun handleAction(action: EventAction) {
         when (action) {
             is EventAction.monthChange -> {
-                println("action.month = ${action.month}")
+                println(" handleaction . month cahgned")
                 savedStateHandle["currentMonth"] = action.month
                 savedStateHandle["daySelected"] = false
-                savedStateHandle["calendarFirstDay"] = DateFormatUtils.convertLocalTimeToLong(action.month.atDay(1))
+                savedStateHandle["calendarFirstDay"] =
+                    DateFormatUtils.convertLocalTimeToLong(action.month.atDay(1))
                 savedStateHandle["calendarEndDay"] = DateFormatUtils.convertLocalDateTimeToLong(
                     action.month.atEndOfMonth().atTime(
                         LocalTime.MAX
                     )
                 )
+
+                println("currentMonth = ${currentMonth.value}")
             }
 
             is EventAction.selectDay -> {
@@ -108,6 +123,11 @@ class CalendarViewModel @Inject constructor(
             is EventAction.setCalendarDays -> {
                 savedStateHandle["calendarFirstDay"] = action.firstDay
                 savedStateHandle["calendarLastDay"] = action.lastDay
+            }
+
+            is EventAction.refreshMonth -> {
+                savedStateHandle["currentMonth"] = yearMonth
+                savedStateHandle["daySelected"] = false
             }
         }
     }

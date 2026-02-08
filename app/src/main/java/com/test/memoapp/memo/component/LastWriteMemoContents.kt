@@ -37,10 +37,10 @@ fun LastWriteMemoContents(
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = shape,
-        color = Color.White,
+        color = Color.White
     ) {
         var dateText : String = ""
-        if (time != null) {
+        if (time != null && time != 0L) {
             dateText = DateFormatUtils.convertLongToString(time, DateConvertType.DEFAULT)
         }
 

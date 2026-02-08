@@ -1,6 +1,5 @@
 package com.test.memoapp.calendar.screen
 
-import android.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -21,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.snapshots.SnapshotApplyResult
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -62,16 +63,18 @@ import java.util.Locale
 fun CalendarScreen(viewModel: CalendarViewModel = hiltViewModel()) {
     val currentMonth = viewModel.currentMonth.collectAsStateWithLifecycle()
     val selectDay = viewModel.selectDay.collectAsStateWithLifecycle()
-    val monthSchedule = viewModel.monthSchedule.collectAsStateWithLifecycle()
-    val daySchedule = viewModel.daySchedule.collectAsStateWithLifecycle()
+//    val monthSchedule = viewModel.monthSchedule.collectAsStateWithLifecycle()
+//    val daySchedule = viewModel.daySchedule.collectAsStateWithLifecycle()
     val daySelected = viewModel.daySelected.collectAsStateWithLifecycle()
+    val monthScheduleMap = viewModel.scheduleMap.collectAsStateWithLifecycle()
 
     val calendarState = CalendarState(
         currentMonth.value,
         selectDay.value,
-        monthSchedule = monthSchedule.value,
-        daySchedule = daySchedule.value,
-        daySelected = daySelected.value
+//        monthSchedule = monthSchedule.value,
+//        daySchedule = daySchedule.value,
+        daySelected = daySelected.value,
+        monthScheduleMap = monthScheduleMap.value
     )
 
     CalendarContent(calendarState, onAction = { action ->
@@ -82,15 +85,17 @@ fun CalendarScreen(viewModel: CalendarViewModel = hiltViewModel()) {
 data class CalendarState(
     val currentMonth: YearMonth,
     val selectDay: Int,
-    val monthSchedule: List<MemoEntity>,
-    val daySchedule: List<MemoEntity>,
-    val daySelected: Boolean
+//    val monthSchedule: List<MemoEntity>,
+//    val daySchedule: List<MemoEntity>,
+    val daySelected: Boolean,
+    val monthScheduleMap: Map<Int, List<MemoEntity>>
 )
 
 sealed class EventAction {
     data class monthChange(val month: YearMonth) : EventAction()
     data class selectDay(val day: CalendarDay) : EventAction()
     data class setCalendarDays(val firstDay: Long, val lastDay: Long) : EventAction()
+    data object refreshMonth : EventAction()
 
 }
 
@@ -103,7 +108,7 @@ fun CalendarContent(calendarState: CalendarState, onAction: (EventAction) -> Uni
 
     val state = rememberCalendarState(
         startMonth = startMonth,
-        firstVisibleMonth = firstVisibleMonth,
+        firstVisibleMonth = calendarState.currentMonth,
         endMonth = endMonth,
         firstDayOfWeek = firstDayOfWeek
     )
@@ -111,7 +116,6 @@ fun CalendarContent(calendarState: CalendarState, onAction: (EventAction) -> Uni
     LaunchedEffect(state) {
         snapshotFlow { state.firstVisibleMonth }
             .collect { calendarMonth ->
-                println(" LaunchedEffect 1")
                 onAction(EventAction.monthChange(calendarMonth.yearMonth))
             }
     }
@@ -128,7 +132,9 @@ fun CalendarContent(calendarState: CalendarState, onAction: (EventAction) -> Uni
             DaysOfWeekTitle(
                 calendarState.currentMonth,
                 daysOfWeek = daysOfWeekFromLocale(),
-                { month -> EventAction.monthChange(month) })
+                { month -> onAction(EventAction.monthChange(month))
+                    println("0000")},
+                { onAction(EventAction.refreshMonth) })
 
             HorizontalCalendar(
                 state = state,
@@ -137,7 +143,8 @@ fun CalendarContent(calendarState: CalendarState, onAction: (EventAction) -> Uni
                         day = day,
                         isSelected = (day.date.dayOfMonth == calendarState.selectDay
                                 && day.date.yearMonth == calendarState.currentMonth),
-                        hasSchedule = false,
+                        hasSchedule = (day.date.yearMonth == calendarState.currentMonth &&
+                                calendarState.monthScheduleMap.containsKey(day.date.dayOfMonth)),
                         isTodoDone = false
                     ) {
                         onAction(EventAction.selectDay(day))
@@ -150,21 +157,35 @@ fun CalendarContent(calendarState: CalendarState, onAction: (EventAction) -> Uni
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 if (calendarState.daySelected) {
-                    itemsIndexed(calendarState.daySchedule) { index, data ->
-                        MemoItemIndex(data)
-                        println("1 data.title = ${data.title}")
+                    if (calendarState.monthScheduleMap.containsKey(calendarState.selectDay)) {
+                        itemsIndexed(calendarState.monthScheduleMap.getValue(calendarState.selectDay)) { index, data ->
+                            MemoItemIndex(data)
+                        }
                     }
                 } else {
-                    itemsIndexed(calendarState.monthSchedule) { index, data ->
-                        MemoItemIndex(data)
-                        println("2 data.title = ${data.title}")
+                    calendarState.monthScheduleMap.toSortedMap().forEach { (day, calendarState) ->
+                        item(key = "header_$day") {
+                            Text(
+                                text = "${day}일",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(4.dp),
+                            )
+                        }
+                        itemsIndexed(calendarState) { index, data ->
+                            MemoItemIndex(data)
+                        }
                     }
+//                    itemsIndexed(calendarState.monthSchedule) { index, data ->
+//                        MemoItemIndex(data)
+//                    }
                 }
             }
 
-            println("calendarState.daySelected = ${calendarState.daySelected}")
-            if (calendarState.daySelected && calendarState.daySchedule.isEmpty() ||
-                !calendarState.daySelected && calendarState.monthSchedule.isEmpty()
+            if (calendarState.daySelected && !calendarState.monthScheduleMap.containsKey(
+                    calendarState.selectDay
+                ) ||
+                !calendarState.daySelected && calendarState.monthScheduleMap.isEmpty()
             ) {
                 var text: String
                 if (calendarState.daySelected) {
@@ -205,7 +226,7 @@ fun MemoItemIndex(data: MemoEntity) {
                     modifier = Modifier.width(57.dp),
                     text = DateFormatUtils.convertLongToString(
                         data.scheduleTime,
-                        DateConvertType.Date
+                        DateConvertType.time
                     )
                 )
             }
@@ -229,9 +250,10 @@ fun PreviewContent() {
         CalendarState(
             currentMonth = YearMonth.now(),
             selectDay = todday.dayOfMonth,
-            DummyItems.memoList,
-            DummyItems.memoList,
-            false
+//            DummyItems.memoList,
+//            DummyItems.memoList,
+            false,
+            emptyMap()
         ), {})
 
 }
@@ -311,26 +333,49 @@ fun daysOfWeekFromLocale(): List<DayOfWeek> {
 fun DaysOfWeekTitle(
     month: YearMonth,
     daysOfWeek: List<DayOfWeek>,
-    changeMonth: (YearMonth) -> Unit
+    changeMonth: (YearMonth) -> Unit,
+    refresh: () -> Unit,
 ) {
-    Column() {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = { changeMonth(month.minusMonths(1)) }) {
-                Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBackIos, contentDescription = "")
+    Column {
+        Box(contentAlignment = Alignment.Center) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = {
+                    changeMonth(month.minusMonths(1)) }) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
+                        contentDescription = ""
+                    )
+                }
+                Text(
+                    text = "${month}",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Row {
+                    IconButton(onClick = {
+                        println("month.plusMonths(1) = ${month.plusMonths(1)}")
+                        changeMonth(month.plusMonths(1))
+                    }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                            contentDescription = null
+                        )
+                    }
+                }
             }
-            Text(
-                text = "${month}",
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.titleMedium,
-            )
-            IconButton(onClick = { changeMonth(month.plusMonths(1)) }) {
+            IconButton(
+                onClick = { refresh.invoke() },
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(16.dp)
+            ) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
-                    contentDescription = ""
+                    imageVector = Icons.Default.Refresh,
+                    contentDescription = null
                 )
             }
         }

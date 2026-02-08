@@ -68,6 +68,10 @@ dependencies {
     implementation("com.kizitonwose.calendar:compose:2.9.0")
     implementation("com.kizitonwose.calendar:core:2.9.0")
     implementation("com.kizitonwose.calendar:view:2.9.0")
+    val paging_version = "3.4.0"
+    implementation("androidx.paging:paging-runtime-ktx:$paging_version")
+    implementation("androidx.paging:paging-compose:$paging_version")
+    implementation("androidx.room:room-paging:2.8.4")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

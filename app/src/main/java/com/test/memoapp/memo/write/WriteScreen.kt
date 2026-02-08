@@ -271,26 +271,26 @@ fun WriteContent(
                 }
 
                 //Todo Option
-                CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
-                    Row(modifier = Modifier, verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            "Todo",
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Switch(
-                            checked = writeFormState.todoOption,
-                            onCheckedChange = { check ->
-                                onAction(
-                                    EventAction.todoOptionChanged(
-                                        check
-                                    )
-                                )
-                            },
-                            modifier = Modifier.scale(0.65f)
-                        )
-                    }
-                }
+//                CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
+//                    Row(modifier = Modifier, verticalAlignment = Alignment.CenterVertically) {
+//                        Text(
+//                            "Todo",
+//                            style = MaterialTheme.typography.bodyMedium,
+//                            fontWeight = FontWeight.Bold
+//                        )
+//                        Switch(
+//                            checked = writeFormState.todoOption,
+//                            onCheckedChange = { check ->
+//                                onAction(
+//                                    EventAction.todoOptionChanged(
+//                                        check
+//                                    )
+//                                )
+//                            },
+//                            modifier = Modifier.scale(0.65f)
+//                        )
+//                    }
+//                }
 
                 Column {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -299,9 +299,9 @@ fun WriteContent(
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Bold,
                         )
-                        IconButton(modifier = Modifier.padding(start = 6.dp),onClick = {}) {
-                            Icon(imageVector = Icons.Default.Add, contentDescription = null)
-                        }
+//                        IconButton(modifier = Modifier.padding(start = 6.dp),onClick = {}) {
+//                            Icon(imageVector = Icons.Default.Add, contentDescription = null)
+//                        }
                     }
                     TagSelector(writeFormState.allTags,writeFormState.selectTags) { tagId ->
                         onAction(EventAction.tagToggle(tagId))
