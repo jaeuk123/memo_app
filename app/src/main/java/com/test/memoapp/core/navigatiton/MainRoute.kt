@@ -35,11 +35,11 @@ sealed class BottomNavItem(
 ) {
     object Home : BottomNavItem(MainRoute.Home, "Home", Icons.Default.Home)
     object Calendar : BottomNavItem(CalendarRoute.Calendar , "Calendar", Icons.Default.DateRange)
-    object Settings : BottomNavItem(SettingsRoute.SettingsHome, "Settings", Icons.Default.Settings)
+//    object Settings : BottomNavItem(SettingsRoute.SettingsHome, "Settings", Icons.Default.Settings)
 }
 
 val bottomNavItem = listOf(
     BottomNavItem.Home,
     BottomNavItem.Calendar,
-    BottomNavItem.Settings
+//    BottomNavItem.Settings
 )

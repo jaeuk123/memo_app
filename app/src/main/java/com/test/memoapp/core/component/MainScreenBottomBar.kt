@@ -71,21 +71,21 @@ fun MainScreenBottomBar(navController : NavHostController) {
                 },
                 text = BottomNavItem.Calendar.title
             )
-            BottomNavItemView(
-                modifier = Modifier.weight(1f),
-                imageVector = BottomNavItem.Settings.icon,
-                isSelected = (nowRoute == BottomNavItem.Settings.route),
-                navigate = {
-                    navController.navigate(BottomNavItem.Settings.route){
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-                        restoreState = true
-                    }
-                    nowRoute = BottomNavItem.Settings.route
-                },
-                text = BottomNavItem.Settings.title
-            )
+//            BottomNavItemView(
+//                modifier = Modifier.weight(1f),
+//                imageVector = BottomNavItem.Settings.icon,
+//                isSelected = (nowRoute == BottomNavItem.Settings.route),
+//                navigate = {
+//                    navController.navigate(BottomNavItem.Settings.route){
+//                        popUpTo(navController.graph.findStartDestination().id) {
+//                            saveState = true
+//                        }
+//                        restoreState = true
+//                    }
+//                    nowRoute = BottomNavItem.Settings.route
+//                },
+//                text = BottomNavItem.Settings.title
+//            )
         }
     }
 }
