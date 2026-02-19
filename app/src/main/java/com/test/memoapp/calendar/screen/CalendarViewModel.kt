@@ -64,13 +64,6 @@ class CalendarViewModel @Inject constructor(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyMap())
 
-//    val monthSchedule = repository.getMemoByTime(calendarFirstDay.value, calendarEndDay.value)
-//        .stateIn(
-//            started = SharingStarted.WhileSubscribed(5000),
-//            scope = viewModelScope,
-//            initialValue = emptyList()
-//        )
-
     private val selectTime = selectDay.map { day ->
         DateFormatUtils.convertLocalDateTimeToLong(
             LocalDateTime.of(
@@ -101,7 +94,6 @@ class CalendarViewModel @Inject constructor(
     fun handleAction(action: EventAction) {
         when (action) {
             is EventAction.monthChange -> {
-                println(" handleaction . month cahgned")
                 savedStateHandle["currentMonth"] = action.month
                 savedStateHandle["daySelected"] = false
                 savedStateHandle["calendarFirstDay"] =
