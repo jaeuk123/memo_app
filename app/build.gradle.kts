@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     kotlin("plugin.serialization")
     id("com.google.devtools.ksp")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     alias(libs.plugins.google.hilt.android)
 }
 
@@ -41,6 +42,7 @@ android {
         jvmTarget = "1.8"
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
     composeOptions {
@@ -72,6 +74,23 @@ dependencies {
     implementation("androidx.paging:paging-runtime-ktx:$paging_version")
     implementation("androidx.paging:paging-compose:$paging_version")
     implementation("androidx.room:room-paging:2.8.4")
+
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    // Retrofit Gson Converter (JSON 파싱용)
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+
+    // OkHttp (로그 확인 및 타임아웃 설정용)
+    implementation("com.squareup.okhttp3:okhttp:5.3.2")
+    implementation("com.squareup.okhttp3:logging-interceptor:5.3.2")
+
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
+    implementation("com.github.skydoves:sandwich:2.2.1")
+    implementation("com.github.skydoves:sandwich-retrofit:2.2.1")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

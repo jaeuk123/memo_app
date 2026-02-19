@@ -6,4 +6,5 @@ plugins {
     alias(libs.plugins.kotlinxSerialization) apply false
     id("com.google.devtools.ksp") version "2.3.1" apply false
     alias(libs.plugins.google.hilt.android) apply false
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin") version "2.0.1" apply false
 }

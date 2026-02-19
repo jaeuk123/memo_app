@@ -29,7 +29,7 @@ fun MainNavHost(
     ) {
         homeGraph(navController, appUiStateManager)
         calendarGraph(navController)
-//        settingsGraph(navController)
+        settingsGraph(navController)
 //        navigation<MainRoute.Graph>(startDestination = MainRoute.Home::class) {
 //            composable<CalendarRoute.Calendar> { CalendarScreen() }
 ////            composable<MainRoute.Home> { CalendarScreen() }

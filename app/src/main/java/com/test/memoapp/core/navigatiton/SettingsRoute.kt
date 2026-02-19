@@ -7,4 +7,6 @@ sealed interface SettingsRoute : Route {
     @Serializable
     data object Graph : SettingsRoute
     @Serializable data object SettingsHome : SettingsRoute
+    @Serializable data object Login : SettingsRoute
+    @Serializable data object SignUp : SettingsRoute
 }
