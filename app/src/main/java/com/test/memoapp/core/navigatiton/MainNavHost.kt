@@ -7,7 +7,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.test.memoapp.calendar.navigation.calendarGraph
-import com.test.memoapp.core.di.AppUiStateManager
 import com.test.memoapp.memo.navigation.homeGraph
 import com.test.memoapp.settings.navigation.settingsGraph
 import kotlin.reflect.KClass
@@ -29,7 +28,7 @@ fun MainNavHost(
     ) {
         homeGraph(navController, appUiStateManager)
         calendarGraph(navController)
-        settingsGraph(navController)
+        settingsGraph(navController, appUiStateManager)
 //        navigation<MainRoute.Graph>(startDestination = MainRoute.Home::class) {
 //            composable<CalendarRoute.Calendar> { CalendarScreen() }
 ////            composable<MainRoute.Home> { CalendarScreen() }

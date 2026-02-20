@@ -26,18 +26,27 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.test.memoapp.core.component.topbar.TitleTopBar
 
 @Composable
-fun LoginScreen(viewModel: LoginViewModel = hiltViewModel() , navSignUp : () -> Unit) {
-    LoginContents({ email, password -> viewModel.login(email, password) }, navSignUp)
+fun LoginScreen(
+    viewModel: LoginViewModel = hiltViewModel(),
+    navSignUp: () -> Unit,
+    navBackPress: () -> Unit
+) {
+    LoginContents({ email, password -> viewModel.login(email, password) }, navSignUp, navBackPress)
 }
 
 @Composable
-private fun LoginContents(loginEvent: (String, String) -> Unit, navSignUp: () -> Unit) {
+private fun LoginContents(
+    loginEvent: (String, String) -> Unit,
+    navSignUp: () -> Unit,
+    navBackPress: () -> Unit
+) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    Scaffold { paddingValues ->
+    Scaffold(topBar = { TitleTopBar(navBackPress, "") }) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -48,8 +57,14 @@ private fun LoginContents(loginEvent: (String, String) -> Unit, navSignUp: () ->
         ) {
             Text("로그인", fontWeight = FontWeight.Bold, fontSize = 27.sp)
             Spacer(modifier = Modifier.height(20.dp))
-            OutlinedTextField(value = email , onValueChange = {email = it} , label = { Text("이메일") })
-            OutlinedTextField(value = password , onValueChange = {password = it} , label = {Text("비밀번호")})
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("이메일") })
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text("비밀번호") })
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
@@ -77,5 +92,5 @@ private fun LoginContents(loginEvent: (String, String) -> Unit, navSignUp: () ->
 @Composable
 @Preview
 private fun LoginScreenPreview() {
-    LoginContents({ email, password -> }, {})
+    LoginContents({ email, password -> }, {}, {})
 }

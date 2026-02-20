@@ -54,12 +54,12 @@ import com.test.memoapp.core.component.dialog.ConfirmTextDialog
 import com.test.memoapp.core.component.dialog.TimeSelectDialog
 import com.test.memoapp.core.component.topbar.SaveTopbar
 import com.test.memoapp.memo.component.TagSelector
-import com.test.memoapp.memo.data.TagEntity
+import com.test.memoapp.memo.data.tag.TagEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.time.LocalTime
 
 @Composable
-fun WriteScreen(memoId : Long ,onBackClick: () -> Unit, viewModel: WriteScreenViewModel = hiltViewModel()) {
+fun WriteScreen(memoId : String? ,onBackClick: () -> Unit, viewModel: WriteScreenViewModel = hiltViewModel()) {
     val title by viewModel.title.collectAsStateWithLifecycle()
     val dateText by viewModel.formattedDate.collectAsStateWithLifecycle()
     val content by viewModel.content.collectAsStateWithLifecycle()
@@ -317,7 +317,7 @@ fun WriteContent(
 @Composable
 @Preview
 private fun PreviewWriteScreen() {
-    val tagEntity = TagEntity(tagId = 1, tagName = "태그1")
+    val tagEntity = TagEntity(tagId = "1", tagName = "태그1")
     WriteContent(
         {}, writeFormState = WriteFormState(
             title = "제목",
@@ -340,7 +340,7 @@ data class WriteFormState(
     val scheduleTime: LocalTime,
     val scheduleOption: Boolean,
     val allTags : List<TagEntity>,
-    val selectTags : Set<Long>
+    val selectTags : Set<String>
 )
 
 sealed class EventAction {
@@ -352,5 +352,5 @@ sealed class EventAction {
     data class onTimeSelected(val time: LocalTime) : EventAction()
     data class scheduleOptionChanged(val scheduleOption: Boolean) : EventAction()
     data class addTags(val tagName: String) : EventAction()
-    data class tagToggle(val tagId : Long) : EventAction()
+    data class tagToggle(val tagId : String) : EventAction()
 }

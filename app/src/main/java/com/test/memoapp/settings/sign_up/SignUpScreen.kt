@@ -23,18 +23,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.test.memoapp.core.component.topbar.TitleTopBar
 
 @Composable
-fun SignUpScreen(viewModel: SignUpViewModel = hiltViewModel()) {
-    SignUpContents { email, password -> viewModel.signUp(email, password) }
+fun SignUpScreen(viewModel: SignUpViewModel = hiltViewModel(), navBackPress: () -> Unit) {
+    SignUpContents({ email, password -> viewModel.signUp(email, password) }, navBackPress)
 }
 
 @Composable
-private fun SignUpContents(signUp: (String, String) -> Unit) {
+private fun SignUpContents(signUp: (String, String) -> Unit, navBackPress: () -> Unit) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    Scaffold { paddingValues ->
+    Scaffold(topBar = { TitleTopBar(navBackPress, "") }) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -68,5 +69,5 @@ private fun SignUpContents(signUp: (String, String) -> Unit) {
 @Composable
 @Preview
 private fun LoginScreenPreview() {
-    SignUpContents({ email, password -> })
+    SignUpContents({ email, password -> },{})
 }

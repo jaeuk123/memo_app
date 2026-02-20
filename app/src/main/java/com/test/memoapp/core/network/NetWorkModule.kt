@@ -1,12 +1,15 @@
 package com.test.memoapp.core.network
 
-import com.skydoves.sandwich.ApiResponse
 import com.skydoves.sandwich.retrofit.adapters.ApiResponseCallAdapterFactory
 import com.test.memoapp.BuildConfig
+import com.test.memoapp.core.data.TokenManager
+import com.test.memoapp.memo.network.MemoApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -20,19 +23,27 @@ object NetWorkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient {
+    fun provideOkHttpClient(tokenManager: TokenManager): OkHttpClient {
         return OkHttpClient.Builder()
             .connectTimeout(5, TimeUnit.SECONDS)
             .readTimeout(5, TimeUnit.SECONDS)
             .writeTimeout(5, TimeUnit.SECONDS)
-            .addInterceptor {
-                chain ->
+            .addInterceptor { chain ->
                 val original = chain.request()
                 val addHeader = original.newBuilder()
                     .addHeader("apikey", BuildConfig.SUPABASE_ANON_CODE)
-//                    .addHeader("Authorization", "pP0Y7yw3YEPQfjFu")
                     .addHeader("Content-Type", "application/json")
                 val request = addHeader.build()
+                chain.proceed(request)
+            }
+            .addInterceptor { chain ->
+                val userInfo = runBlocking { tokenManager.userFlow.first() }
+                val request = chain.request().newBuilder()
+                    .apply {
+                        userInfo?.let {
+                            addHeader("Authorization", "Bearer ${it.accessToken}")
+                        }
+                    }.build()
                 chain.proceed(request)
             }
             .addInterceptor(HttpLoggingInterceptor().apply {
@@ -43,7 +54,7 @@ object NetWorkModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(okHttpClient: OkHttpClient) : Retrofit {
+    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
             .baseUrl(BuildConfig.SUPABASE_URL)
             .client(okHttpClient)
@@ -54,7 +65,13 @@ object NetWorkModule {
 
     @Provides
     @Singleton
-    fun provideAuthApiService(retrofit: Retrofit) : AuthApiService {
+    fun provideAuthApiService(retrofit: Retrofit): AuthApiService {
         return retrofit.create(AuthApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMemoApiService(retrofit: Retrofit) : MemoApiService {
+        return retrofit.create(MemoApiService::class.java)
     }
 }

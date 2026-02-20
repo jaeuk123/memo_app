@@ -18,13 +18,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.test.memoapp.memo.Utils.DummyItems
-import com.test.memoapp.memo.data.TagEntity
+import com.test.memoapp.memo.data.tag.TagEntity
 
 @Composable
 fun TagSelector(
     allTags: List<TagEntity>,
-    selectTags: Set<Long>,
-    onTagToggle: (Long) -> Unit
+    selectTags: Set<String>,
+    onTagToggle: (String) -> Unit
 ) {
     FlowRow(
         modifier = Modifier

@@ -1,32 +1,26 @@
 package com.test.memoapp.memo.write
 
-import androidx.compose.runtime.key
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.test.memoapp.core.Util.DateConvertType
 import com.test.memoapp.core.Util.DateFormatUtils
-import com.test.memoapp.memo.data.MemoEntity
+import com.test.memoapp.memo.data.memo.MemoEntity
 import com.test.memoapp.memo.data.MemoRepositoryImpl
-import com.test.memoapp.memo.data.MemoTagCrossRef
-import com.test.memoapp.memo.data.MemoType
-import com.test.memoapp.memo.data.TagEntity
+import com.test.memoapp.memo.data.memo_tag_relation.MemoTagCrossRef
+import com.test.memoapp.memo.data.memo_tag_relation.MemoTagRepository
+import com.test.memoapp.memo.data.tag.TagEntity
+import com.test.memoapp.memo.data.tag.TagRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.WhileSubscribed
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import java.time.LocalTime
 import javax.inject.Inject
@@ -34,7 +28,9 @@ import javax.inject.Inject
 @HiltViewModel
 class WriteScreenViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val repository: MemoRepositoryImpl
+    private val memoRepository: MemoRepositoryImpl,
+    private val memoTagRepository: MemoTagRepository,
+    private val tagRepository: TagRepository,
 ) : ViewModel() {
     val title = savedStateHandle.getStateFlow(key = "title", initialValue = "")
     val scheduleDate = savedStateHandle.getStateFlow("date", System.currentTimeMillis())
@@ -42,14 +38,15 @@ class WriteScreenViewModel @Inject constructor(
     val todoOption = savedStateHandle.getStateFlow(key = "todoOption", initialValue = false)
     val scheduleOption = savedStateHandle.getStateFlow(key = "scheduleOption", initialValue = false)
     val scheduleTime = savedStateHandle.getStateFlow<LocalTime>("scheduleTime", LocalTime.of(0, 0))
-    val loadMemoId: Long? = savedStateHandle["memoId"]
-    var allTags: StateFlow<List<TagEntity>> = repository.getAllTags().stateIn(
+    val loadMemoId: String? = savedStateHandle["memoId"]
+    var allTags: StateFlow<List<TagEntity>> = tagRepository.getAllTags().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
-//    var selectTags: List<String> = savedStateHandle.getStateFlow(key = "selectTags", initialValue = emptyList)
-    var selectTags: MutableStateFlow<Set<Long>> = MutableStateFlow(value = mutableSetOf())
+
+    //    var selectTags: List<String> = savedStateHandle.getStateFlow(key = "selectTags", initialValue = emptyList)
+    var selectTags: MutableStateFlow<Set<String>> = MutableStateFlow(value = mutableSetOf())
 
     val formattedDate = scheduleDate.map { timestamp ->
         timestamp.let {
@@ -59,7 +56,7 @@ class WriteScreenViewModel @Inject constructor(
 
 
     init {
-        if (loadMemoId != -1L && loadMemoId != null) {
+        if (loadMemoId != null) {
             viewModelScope.launch(Dispatchers.IO) {
                 loadData()
             }
@@ -67,7 +64,7 @@ class WriteScreenViewModel @Inject constructor(
     }
 
     private suspend fun loadData() {
-        val loadMemo = repository.getMemoById(loadMemoId!!)
+        val loadMemo = memoRepository.getMemoById(loadMemoId!!)
         loadMemo?.let { (memoId, title, content, lastModifyTime, scheduleTime, memoType) ->
             savedStateHandle["title"] = title
             if (scheduleTime != 0L) {
@@ -78,7 +75,7 @@ class WriteScreenViewModel @Inject constructor(
             savedStateHandle["content"] = content
         }
 
-        repository.getMemoWithTags(loadMemoId).first()?.tags?.forEach { (tagId, tagName) ->
+        memoTagRepository.getMemoWithTags(loadMemoId).first()?.tags?.forEach { (tagId, tagName) ->
             selectTags.update {
                 selectTags.value + tagId
             }
@@ -122,9 +119,10 @@ class WriteScreenViewModel @Inject constructor(
                     addTag(action.tagName)
                 }
             }
+
             is EventAction.tagToggle -> {
                 selectTags.update {
-                    if (selectTags.value.contains(action.tagId)){
+                    if (selectTags.value.contains(action.tagId)) {
                         selectTags.value - action.tagId
                     } else {
                         selectTags.value + action.tagId
@@ -134,62 +132,59 @@ class WriteScreenViewModel @Inject constructor(
         }
     }
 
-    suspend fun addTag(tagName : String) {
-        repository.saveTag(TagEntity(tagName = tagName))
+    suspend fun addTag(tagName: String) {
+        tagRepository.saveTag(TagEntity(tagName = tagName))
     }
+
     suspend fun saveMemo() {
-        var saveMemoId : Long
+        var saveMemoId: String
         if (scheduleOption.value) {
             val dateTime = LocalDateTime.of(
                 DateFormatUtils.convertLongToDate(scheduleDate.value!!),
                 scheduleTime.value
             )
-            if (loadMemoId == -1L || loadMemoId == null) {
-                saveMemoId = repository.saveMemo(
-                    MemoEntity(
-                        title = title.value,
-                        content = content.value,
-                        scheduleTime = DateFormatUtils.convertLocalDateTimeToLong(dateTime),
-                        memoType = MemoType.Default.value
-                    )
+            val memoEntity = MemoEntity(
+                title = title.value,
+                content = content.value,
+                scheduleTime = DateFormatUtils.convertLocalDateTimeToLong(dateTime),
+            )
+            if (loadMemoId == null) {
+                saveMemoId = memoEntity.memoId
+                memoRepository.saveMemo(
+                    memoEntity
                 )
             } else {
                 saveMemoId = loadMemoId
-                repository.updateMemo(
-                    MemoEntity(
-                        memoId = loadMemoId,
-                        title = title.value,
-                        content = content.value,
-                        scheduleTime = DateFormatUtils.convertLocalDateTimeToLong(dateTime),
-                        memoType = MemoType.Default.value
+                memoRepository.updateMemo(
+                    memoEntity.copy(
+                        memoId = saveMemoId
                     )
                 )
             }
         } else {
-            if (loadMemoId == -1L || loadMemoId == null) {
-                saveMemoId = repository.saveMemo(
-                    MemoEntity(
-                        title = title.value,
-                        content = content.value,
-                        memoType = MemoType.Default.value
-                    )
-                )
+            val memoEntity = MemoEntity(
+                title = title.value,
+                content = content.value,
+            )
+            saveMemoId = memoEntity.memoId
+            if (loadMemoId == null) {
+                memoRepository.saveMemo(memoEntity)
             } else {
                 saveMemoId = loadMemoId
-                repository.updateMemo(
-                    MemoEntity(
-                        memoId = loadMemoId,
-                        title = title.value,
-                        content = content.value,
-                        memoType = MemoType.Default.value
-                    )
+                memoRepository.updateMemo(
+                    memoEntity.copy(memoId = saveMemoId)
                 )
             }
         }
 
         if (selectTags.value.isNotEmpty()) {
             selectTags.value.forEach { tagId ->
-                repository.insertMemoTagCrossRef(crossRef = MemoTagCrossRef(tagId = tagId, memoId = saveMemoId))
+                memoTagRepository.insertMemoTagCrossRef(
+                    crossRef = MemoTagCrossRef(
+                        tagId = tagId,
+                        memoId = saveMemoId
+                    )
+                )
             }
         }
     }

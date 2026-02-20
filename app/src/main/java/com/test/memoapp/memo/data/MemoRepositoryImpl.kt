@@ -29,7 +29,7 @@ class MemoRepositoryImpl @Inject constructor(
         return memoDao.getMemoByTime(startTime, endTime)
     }
 
-    override suspend fun removeMemo(memoId: Long): Int {
+    override suspend fun removeMemo(memoId: String): Int {
         return memoDao.deleteMemo(memoId)
     }
 
@@ -41,7 +41,7 @@ class MemoRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun getMemoById(memoId: Long): MemoEntity? {
+    override suspend fun getMemoById(memoId: String): MemoEntity? {
         return memoDao.getMemoById(memoId)
     }
 
@@ -67,13 +67,8 @@ interface MemoRepository {
     fun getAllMemos(): Flow<List<MemoEntity>>
     fun getMemoByTime(startTime: Long, endTime: Long): Flow<List<MemoEntity>>
     suspend fun updateMemo(memo: MemoEntity)
-    fun getAllTags(): Flow<List<TagEntity>>
-    suspend fun getMemoById(memoId: Long): MemoEntity?
-    suspend fun insertMemoTagCrossRef(crossRef: MemoTagCrossRef)
+    suspend fun getMemoById(memoId: String): MemoEntity?
     fun getRecentModifyMemo(): Flow<List<MemoEntity>>
-    fun getMemoWithTags(memoId: Long): Flow<MemoWithTags?>
-    suspend fun removeMemo(memoId: Long): Int
-    fun getTagWithMemos(tagId: Long): Flow<TagWithMemos>
-
+    suspend fun removeMemo(memoId: String): Int
     fun getPagingMemo() : Flow<PagingData<MemoEntity>>
 }

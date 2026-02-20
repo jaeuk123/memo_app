@@ -22,9 +22,9 @@ sealed interface MainRoute : Route {
     @Serializable data object Home : MainRoute
     @Serializable data object Settings : MainRoute
 
-    @Serializable data class Write(val memoId: Long? = null) : MainRoute
-    @Serializable data class Detail(val memoId: Long? = null) : MainRoute
-    @Serializable data class TagMemoList(val tagId : Long? = null) : MainRoute
+    @Serializable data class Write(val memoId: String? = null) : MainRoute
+    @Serializable data class Detail(val memoId: String? = null) : MainRoute
+    @Serializable data class TagMemoList(val tagId : String? = null) : MainRoute
     @Serializable data object LastWriteList : MainRoute
 }
 

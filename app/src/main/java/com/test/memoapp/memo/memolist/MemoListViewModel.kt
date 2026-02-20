@@ -18,7 +18,7 @@ class MemoListViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val repository: MemoTagRepository
 ) : ViewModel() {
-    val loadTagId: StateFlow<Long?> =
+    val loadTagId: StateFlow<String?> =
         savedStateHandle.getStateFlow(key = "tagId", initialValue = null)
 
     val tagWithMemos: StateFlow<TagWithMemos?> = loadTagId

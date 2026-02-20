@@ -1,16 +1,8 @@
 package com.test.memoapp.core.network
 
 import com.skydoves.sandwich.ApiResponse
-import com.skydoves.sandwich.getOrThrow
 import com.skydoves.sandwich.message
-import com.skydoves.sandwich.onError
-import com.skydoves.sandwich.onException
-import com.skydoves.sandwich.onFailure
-import com.skydoves.sandwich.onSuccess
-import com.skydoves.sandwich.retrofit.statusCode
-import com.skydoves.sandwich.suspendOnSuccess
-import com.test.memoapp.core.di.TokenManager
-import retrofit2.Response
+import com.test.memoapp.core.data.TokenManager
 import javax.inject.Inject
 
 class AuthRepository @Inject constructor(
@@ -53,6 +45,14 @@ class AuthRepository @Inject constructor(
                 }
                 true
             }
+        }
+    }
+
+    suspend fun logout(): Boolean {
+        return when(authService.logout()){
+            is ApiResponse.Failure.Error -> false
+            is ApiResponse.Failure.Exception -> false
+            is ApiResponse.Success<*> -> true
         }
     }
 }

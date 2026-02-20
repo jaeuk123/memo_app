@@ -18,13 +18,13 @@ import com.test.memoapp.core.component.topbar.TitleTopBar
 import com.test.memoapp.memo.Utils.DummyItems
 import com.test.memoapp.memo.Utils.getSectionShape
 import com.test.memoapp.memo.component.LastWriteMemoContents
-import com.test.memoapp.memo.data.MemoEntity
+import com.test.memoapp.memo.data.memo.MemoEntity
 import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun LastWriteMemoListScreen(
     onBackClick: () -> Unit,
-    navigateDetail: (Long) -> Unit,
+    navigateDetail: (String) -> Unit,
     viewModel: LastWriteMemoViewModel = hiltViewModel()
 ) {
     val memoList = viewModel.memoPagingData.collectAsLazyPagingItems()
@@ -35,7 +35,7 @@ fun LastWriteMemoListScreen(
 @Composable
 fun LastWriteMemoListContents(
     itemSnapshotList: LazyPagingItems<MemoEntity>,
-    navigateDetail: (Long) -> Unit,
+    navigateDetail: (String) -> Unit,
     onBackClick: () -> Unit
 ) {
     Scaffold(topBar = { TitleTopBar(backStackClick = onBackClick, title = "작성한 메모") }) { paddingValues ->

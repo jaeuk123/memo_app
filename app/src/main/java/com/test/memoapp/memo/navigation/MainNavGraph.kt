@@ -10,8 +10,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
-import com.test.memoapp.core.di.AppUiStateManager
-import com.test.memoapp.core.di.FabAction
+import com.test.memoapp.core.navigatiton.AppUiStateManager
+import com.test.memoapp.core.navigatiton.FabAction
 import com.test.memoapp.core.navigatiton.MainRoute
 import com.test.memoapp.memo.detail.MemoDetailScreen
 import com.test.memoapp.memo.lastwriteList.LastWriteMemoListScreen
@@ -69,7 +69,7 @@ fun NavGraphBuilder.homeGraph(navController: NavHostController, uiStateManager: 
                 uiStateManager.updateFab(null)
                 onDispose { }
             }
-            val memoId = backStackEntry.toRoute<MainRoute.Write>().memoId ?: -1L
+            val memoId = backStackEntry.toRoute<MainRoute.Write>().memoId
             WriteScreen(onBackClick = {
                 if (navController.previousBackStackEntry != null) {
                     navController.popBackStack()

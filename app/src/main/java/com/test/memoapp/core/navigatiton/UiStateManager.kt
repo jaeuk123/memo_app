@@ -1,4 +1,4 @@
-package com.test.memoapp.core.di
+package com.test.memoapp.core.navigatiton
 
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel

@@ -21,14 +21,14 @@ import com.test.memoapp.core.component.topbar.TitleTopBar
 import com.test.memoapp.memo.Utils.DummyItems
 import com.test.memoapp.memo.Utils.getSectionShape
 import com.test.memoapp.memo.component.LastWriteMemoContents
-import com.test.memoapp.memo.data.MemoEntity
+import com.test.memoapp.memo.data.memo.MemoEntity
 
 @Composable
 fun MemoListScreen(
     onBackClick: () -> Unit,
-    navigateDetail: (Long) -> Unit,
-    navigateModify : (Long) -> Unit,
-    tagId: Long,
+    navigateDetail: (String) -> Unit,
+    navigateModify : (String) -> Unit,
+    tagId: String,
     viewModel: MemoListViewModel = hiltViewModel()
 ) {
     val tagWithMemos = viewModel.tagWithMemos.collectAsStateWithLifecycle()
@@ -49,11 +49,11 @@ fun MemoListScreen(
 private fun MemoListContent(
     data: List<MemoEntity>,
     title: String,
-    navigateDetail: (Long) -> Unit,
-    navigateModify: (Long) -> Unit,
+    navigateDetail: (String) -> Unit,
+    navigateModify: (String) -> Unit,
     onBackClick: () -> Unit
 ) {
-    var modifyOnItem by remember { mutableStateOf<Long?>(null) }
+    var modifyOnItem by remember { mutableStateOf<String?>(null) }
 
     Scaffold(topBar = { TitleTopBar(onBackClick, title) }) { paddingValues ->
         Column(

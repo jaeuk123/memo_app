@@ -23,6 +23,9 @@ interface AuthApiService {
     suspend fun refreshToken(
         @Body refreshRequest: RefreshRequest
     ) : ApiResponse<AuthResponse>
+
+    @POST("/auth/v1/logout")
+    suspend fun logout() : ApiResponse<Unit>
 }
 
 data class AuthRequest(

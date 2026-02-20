@@ -43,15 +43,15 @@ import com.test.memoapp.memo.Utils.getSectionShape
 import com.test.memoapp.memo.component.LastWriteMemoContents
 import com.test.memoapp.memo.component.ScheduleContents
 import com.test.memoapp.memo.component.TagsContents
-import com.test.memoapp.memo.data.MemoEntity
-import com.test.memoapp.memo.data.TagEntity
+import com.test.memoapp.memo.data.memo.MemoEntity
+import com.test.memoapp.memo.data.tag.TagEntity
 import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
-    modifyMemoNavigate: (Long) -> Unit,
-    detailMemoNavigate: (Long) -> Unit,
-    tagMemoNavigate : (Long) -> Unit,
+    modifyMemoNavigate: (String) -> Unit,
+    detailMemoNavigate: (String) -> Unit,
+    tagMemoNavigate : (String) -> Unit,
     lastWriteNavigate : () -> Unit,
     viewModel: HomeListViewModel = hiltViewModel()
 ) {
@@ -85,12 +85,12 @@ fun HomeListContent(
     memos: List<MemoEntity>,
     tags: List<TagEntity>,
     tagSaveEvent: (String) -> Unit,
-    navigateModify: (Long) -> Unit,
-    navigateDetail: (Long) -> Unit,
+    navigateModify: (String) -> Unit,
+    navigateDetail: (String) -> Unit,
     lastWriteNavigate: () -> Unit,
-    tagMemoNavigate: (Long) -> Unit
+    tagMemoNavigate: (String) -> Unit
 ) {
-    var modifyOnItem by remember { mutableStateOf<Long?>(null) }
+    var modifyOnItem by remember { mutableStateOf<String?>(null) }
 
     Scaffold { paddingValues ->
         var tagDialogVisible by remember { mutableStateOf(false) }

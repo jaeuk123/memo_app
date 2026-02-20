@@ -24,14 +24,14 @@ import com.test.memoapp.core.Util.DateConvertType
 import com.test.memoapp.core.Util.DateFormatUtils
 import com.test.memoapp.core.component.topbar.MemoDetailTopBar
 import com.test.memoapp.memo.Utils.DummyItems
-import com.test.memoapp.memo.data.MemoEntity
-import com.test.memoapp.memo.data.MemoWithTags
+import com.test.memoapp.memo.data.memo.MemoEntity
+import com.test.memoapp.memo.data.memo_tag_relation.MemoWithTags
 
 @Composable
 fun MemoDetailScreen(
     onBackClick: () -> Unit,
-    navigateModify: (Long) -> Unit,
-    memoId: Long,
+    navigateModify: (String) -> Unit,
+    memoId: String,
     viewModel: MemoDetailViewModel = hiltViewModel()
 ) {
     val selectedTags = viewModel.MemoWithTags.collectAsStateWithLifecycle()
@@ -68,6 +68,8 @@ fun DetailContent(
                 .padding(start = 16.dp, end = 16.dp)
         ) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                if (memoWithTags.tags.isNotEmpty())
+                    Text("태그 :", modifier = Modifier.padding(4.dp))
                 for (entity in memoWithTags.tags) {
                     Text(entity.tagName, modifier = Modifier.padding(4.dp))
                 }
