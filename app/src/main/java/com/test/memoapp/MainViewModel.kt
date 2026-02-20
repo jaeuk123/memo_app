@@ -2,7 +2,7 @@ package com.test.memoapp
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.test.memoapp.core.di.TokenManager
+import com.test.memoapp.core.data.TokenManager
 import com.test.memoapp.core.network.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -43,8 +43,5 @@ class MainViewModel @Inject constructor(
             }
         }
     }
-
-}
-}
 
 }

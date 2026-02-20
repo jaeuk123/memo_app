@@ -8,7 +8,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.test.memoapp.core.component.MainScreenBottomBar
-import com.test.memoapp.core.di.AppUiStateManager
+import com.test.memoapp.core.navigatiton.AppUiStateManager
 import com.test.memoapp.core.navigatiton.MainNavHost
 import com.test.memoapp.core.navigatiton.MainRoute
 

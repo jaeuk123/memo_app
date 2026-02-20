@@ -3,12 +3,10 @@ package com.test.memoapp.calendar.screen
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.test.memoapp.core.Util.DateFormatUtils
-import com.test.memoapp.memo.data.MemoEntity
+import com.test.memoapp.memo.data.memo.MemoEntity
 import com.test.memoapp.memo.data.MemoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest

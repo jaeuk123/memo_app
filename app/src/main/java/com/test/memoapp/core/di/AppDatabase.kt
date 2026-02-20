@@ -3,9 +3,9 @@ package com.test.memoapp.core.di
 import android.content.Context
 import androidx.room.Room
 import com.test.memoapp.core.data.AppDatabase
-import com.test.memoapp.memo.data.MemoDao
-import com.test.memoapp.memo.data.MemoTagDao
-import com.test.memoapp.memo.data.TagDao
+import com.test.memoapp.memo.data.memo.MemoDao
+import com.test.memoapp.memo.data.memo_tag_relation.MemoTagDao
+import com.test.memoapp.memo.data.tag.TagDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

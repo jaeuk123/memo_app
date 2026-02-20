@@ -31,7 +31,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.runtime.snapshots.SnapshotApplyResult
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -50,7 +49,7 @@ import com.kizitonwose.calendar.core.yearMonth
 import com.test.memoapp.core.Util.DateConvertType
 import com.test.memoapp.core.Util.DateFormatUtils
 import com.test.memoapp.memo.Utils.DummyItems
-import com.test.memoapp.memo.data.MemoEntity
+import com.test.memoapp.memo.data.memo.MemoEntity
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth

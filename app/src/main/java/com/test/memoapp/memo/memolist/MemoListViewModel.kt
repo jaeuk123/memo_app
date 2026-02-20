@@ -3,9 +3,8 @@ package com.test.memoapp.memo.memolist
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.test.memoapp.memo.data.MemoRepositoryImpl
-import com.test.memoapp.memo.data.MemoWithTags
-import com.test.memoapp.memo.data.TagWithMemos
+import com.test.memoapp.memo.data.memo_tag_relation.MemoTagRepository
+import com.test.memoapp.memo.data.memo_tag_relation.TagWithMemos
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MemoListViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val repository: MemoRepositoryImpl
+    private val repository: MemoTagRepository
 ) : ViewModel() {
     val loadTagId: StateFlow<Long?> =
         savedStateHandle.getStateFlow(key = "tagId", initialValue = null)

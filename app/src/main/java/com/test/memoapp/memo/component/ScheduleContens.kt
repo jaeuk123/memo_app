@@ -20,8 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import com.test.memoapp.core.Util.DateFormatUtils
 import com.test.memoapp.core.Util.DateFormatUtils.timeFormatPattern
 
@@ -49,16 +51,21 @@ fun ScheduleContents(
                     text = formatTime,
                 )
                 Text(
-                    text = text,
                     modifier = Modifier
                         .padding(6.dp, top = 16.dp, bottom = 16.dp)
-                        .weight(1f)
+                        .weight(1f),
+                    text = text,
+                    maxLines = 1,
+                    softWrap = true,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
             if (isVisible) {
-                Row(modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .fillMaxHeight()) {
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .fillMaxHeight()
+                ) {
                     IconButton(
                         modifier = Modifier
                             .background(color = Color(0xFF81D4FA))
@@ -84,5 +91,11 @@ fun ScheduleContents(
 @Composable
 @Preview
 private fun PreviewSchedule() {
-    ScheduleContents(text = "제목" , isVisible = true, time = 0L, navigateModify = {},shape = RoundedCornerShape(16.dp),)
+    ScheduleContents(
+        text = "제목",
+        isVisible = true,
+        time = 0L,
+        navigateModify = {},
+        shape = RoundedCornerShape(16.dp),
+    )
 }
