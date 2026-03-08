@@ -1,7 +1,7 @@
 package com.test.memoapp.core.di
 
-import com.test.memoapp.memo.data.MemoRepository
-import com.test.memoapp.memo.data.MemoRepositoryImpl
+import com.test.memoapp.memo.data.memo.MemoRepository
+import com.test.memoapp.memo.data.memo.MemoRepositoryImpl
 import com.test.memoapp.memo.data.memo_tag_relation.MemoTagRepository
 import com.test.memoapp.memo.data.memo_tag_relation.MemoTagRepositoryImpl
 import com.test.memoapp.memo.data.tag.TagRepository

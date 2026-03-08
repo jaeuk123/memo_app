@@ -6,12 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.test.memoapp.memo.data.memo_tag_relation.MemoTagRepository
 import com.test.memoapp.memo.data.memo_tag_relation.TagWithMemos
 import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
-import javax.inject.Inject
 
 @HiltViewModel
 class MemoListViewModel @Inject constructor(

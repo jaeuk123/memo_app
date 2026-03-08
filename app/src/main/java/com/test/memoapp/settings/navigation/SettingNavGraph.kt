@@ -9,6 +9,7 @@ import com.test.memoapp.core.navigatiton.SettingsRoute
 import com.test.memoapp.settings.login.LoginScreen
 import com.test.memoapp.settings.main.SettingMainScreen
 import com.test.memoapp.settings.sign_up.SignUpScreen
+import com.test.memoapp.settings.sync.SyncScreen
 
 
 fun NavGraphBuilder.settingsGraph(
@@ -18,7 +19,8 @@ fun NavGraphBuilder.settingsGraph(
     navigation<SettingsRoute.Graph>(startDestination = SettingsRoute.SettingsHome::class) {
         composable<SettingsRoute.SettingsHome> {
             appUiStateManager.updateBottomBarVisibility(true)
-            SettingMainScreen({ navController.navigate(SettingsRoute.Login) })
+            SettingMainScreen({ navController.navigate(SettingsRoute.Login) },
+                { navController.navigate(SettingsRoute.Sync) })
         }
 
         composable<SettingsRoute.Login> {
@@ -34,11 +36,22 @@ fun NavGraphBuilder.settingsGraph(
         }
 
         composable<SettingsRoute.SignUp> {
-            SignUpScreen(navBackPress = {
+            SignUpScreen(
+                navBackPress = {
+                    if (navController.previousBackStackEntry != null) {
+                        navController.popBackStack()
+                    }
+                },
+            )
+        }
+
+        composable<SettingsRoute.Sync> {
+            appUiStateManager.updateBottomBarVisibility(false)
+            SyncScreen( backPressEvent = {
                 if (navController.previousBackStackEntry != null) {
                     navController.popBackStack()
                 }
-            },)
+            })
         }
     }
 }

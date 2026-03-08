@@ -3,17 +3,17 @@ package com.test.memoapp.memo.list
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.test.memoapp.memo.data.MemoRepository
+import com.test.memoapp.memo.data.memo.MemoRepository
 import com.test.memoapp.memo.data.memo.MemoEntity
 import com.test.memoapp.memo.data.tag.TagEntity
 import com.test.memoapp.memo.data.tag.TagRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import java.time.LocalDate
 import java.time.ZoneId
-import javax.inject.Inject
 
 @HiltViewModel
 class HomeListViewModel @Inject constructor(

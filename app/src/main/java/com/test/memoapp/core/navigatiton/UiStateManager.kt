@@ -3,9 +3,9 @@ package com.test.memoapp.core.navigatiton
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import javax.inject.Inject
 
 data class FabAction (
     val icon: @Composable () -> Unit,

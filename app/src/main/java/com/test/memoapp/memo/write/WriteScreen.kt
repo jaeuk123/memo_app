@@ -95,10 +95,6 @@ fun WriteContent(
     writeFormState: WriteFormState,
     onAction: (EventAction) -> Unit,
 ) {
-//    val addedOptionSchedule = remember { mutableStateOf(false) }
-    val addedOptionTag = remember { mutableStateOf(false) }
-    val showOptionTag = remember { mutableStateOf(false) }
-
     // 일정 피커 표시
     val showDatePickerModal = remember { mutableStateOf(false) }
     // 일정 시간 표시

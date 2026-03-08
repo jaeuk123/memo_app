@@ -5,6 +5,8 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
+import com.test.memoapp.memo.data.memo.MemoEntity
 import com.test.memoapp.memo.data.tag.TagEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -18,4 +20,11 @@ interface TagDao {
 
     @Delete
     suspend fun deleteTag(memo : TagEntity)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSyncTag(tag : List<TagEntity>)
+
+    @Transaction
+    suspend fun syncTag(list : List<TagEntity>) {
+        insertSyncTag(list)
+    }
 }

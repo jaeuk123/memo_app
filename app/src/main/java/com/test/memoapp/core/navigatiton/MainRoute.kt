@@ -10,10 +10,6 @@ import kotlinx.serialization.Serializable
 
 sealed interface Route
 
-//sealed interface Route {
-//    @Serializable data object Write : Route //글 작성 화면
-//    @Serializable data object Main : Route //앱 메인 화면
-//}
 @Serializable
 sealed interface MainRoute : Route {
     @Serializable

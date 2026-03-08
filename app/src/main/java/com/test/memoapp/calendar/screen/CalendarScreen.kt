@@ -103,7 +103,6 @@ fun CalendarContent(calendarState: CalendarState, onAction: (EventAction) -> Uni
     val startMonth = remember { calendarState.currentMonth.minusMonths(600) }
     val endMonth = remember { calendarState.currentMonth.plusMonths(600) }
     val firstDayOfWeek = remember { firstDayOfWeekFromLocale() }
-    val firstVisibleMonth = YearMonth.now(ZoneId.of("Asia/Seoul"))
 
     val state = rememberCalendarState(
         startMonth = startMonth,
@@ -118,21 +117,23 @@ fun CalendarContent(calendarState: CalendarState, onAction: (EventAction) -> Uni
                 onAction(EventAction.monthChange(calendarMonth.yearMonth))
             }
     }
+
     val lastVisibleMonth = state.lastVisibleMonth
     val firstDay =
         DateFormatUtils.convertLocalTimeToLong(lastVisibleMonth.weekDays.first().first().date)
     val lastDateOnScreen =
         DateFormatUtils.convertLocalTimeToLong(lastVisibleMonth.weekDays.last().last().date)
 
-    onAction(EventAction.setCalendarDays(firstDay, lastDateOnScreen))
+    LaunchedEffect(firstDay, lastDateOnScreen) {
+        onAction(EventAction.setCalendarDays(firstDay, lastDateOnScreen))
+    }
 
     Scaffold { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
             DaysOfWeekTitle(
                 calendarState.currentMonth,
                 daysOfWeek = daysOfWeekFromLocale(),
-                { month -> onAction(EventAction.monthChange(month))
-                    println("0000")},
+                { month -> onAction(EventAction.monthChange(month)) },
                 { onAction(EventAction.refreshMonth) })
 
             HorizontalCalendar(
@@ -175,9 +176,6 @@ fun CalendarContent(calendarState: CalendarState, onAction: (EventAction) -> Uni
                             MemoItemIndex(data)
                         }
                     }
-//                    itemsIndexed(calendarState.monthSchedule) { index, data ->
-//                        MemoItemIndex(data)
-//                    }
                 }
             }
 
@@ -249,8 +247,6 @@ fun PreviewContent() {
         CalendarState(
             currentMonth = YearMonth.now(),
             selectDay = todday.dayOfMonth,
-//            DummyItems.memoList,
-//            DummyItems.memoList,
             false,
             emptyMap()
         ), {})
@@ -261,13 +257,13 @@ fun PreviewContent() {
 fun Day(
     day: CalendarDay,
     isSelected: Boolean = false,
-    hasSchedule: Boolean = false,  // 일정이 있는가?
-    isTodoDone: Boolean = false,    // 오늘 할 일을 다 끝냈는가?
+    hasSchedule: Boolean = false,
+    isTodoDone: Boolean = false,
     onClick: (CalendarDay) -> Unit
 ) {
     Box(
         modifier = Modifier
-            .aspectRatio(1f) // 정사각형 모양
+            .aspectRatio(1f)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
@@ -319,7 +315,7 @@ fun Day(
 fun daysOfWeekFromLocale(): List<DayOfWeek> {
     val firstDayOfWeek = WeekFields.of(Locale.getDefault()).firstDayOfWeek
     var daysOfWeek = DayOfWeek.values()
-    // 시작 요일에 맞게 순서 재배열
+
     if (firstDayOfWeek != DayOfWeek.MONDAY) {
         val rhs = daysOfWeek.sliceArray(firstDayOfWeek.ordinal..daysOfWeek.indices.last)
         val lhs = daysOfWeek.sliceArray(0 until firstDayOfWeek.ordinal)
@@ -356,7 +352,6 @@ fun DaysOfWeekTitle(
                 )
                 Row {
                     IconButton(onClick = {
-                        println("month.plusMonths(1) = ${month.plusMonths(1)}")
                         changeMonth(month.plusMonths(1))
                     }) {
                         Icon(
@@ -381,18 +376,18 @@ fun DaysOfWeekTitle(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp), // 상하 여백
+                .padding(vertical = 8.dp),
         ) {
             for (dayOfWeek in daysOfWeek) {
                 Text(
-                    modifier = Modifier.weight(1f), // 7등분
+                    modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center,
-                    text = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.KOREAN), // "월", "화" 등
+                    text = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.KOREAN),
                     style = MaterialTheme.typography.labelMedium,
                     color = when (dayOfWeek) {
-                        DayOfWeek.SUNDAY -> Color.Red    // 일요일은 빨간색
-                        DayOfWeek.SATURDAY -> Color.Blue // 토요일은 파란색
-                        else -> Color.Gray               // 평일은 회색
+                        DayOfWeek.SUNDAY -> Color.Red
+                        DayOfWeek.SATURDAY -> Color.Blue
+                        else -> Color.Gray
                     }
                 )
             }

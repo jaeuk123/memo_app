@@ -37,6 +37,8 @@ fun MemoDetailTopBar(
 ) {
     var MenuExpanded by remember { mutableStateOf(false) }
 
+    val scope = rememberCoroutineScope()
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -65,15 +67,15 @@ fun MemoDetailTopBar(
                     modifyOption.invoke()
                 }, text = { Text("수정") })
                 DropdownMenuItem(onClick = {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        withContext(Dispatchers.IO){
-                            removeOption.invoke()
-                        }
+                    scope.launch {
+                        removeOption.invoke()
                         backStackClick.invoke()
                     }
+//                    CoroutineScope(Dispatchers.Main).launch {
+//                        withContext(Dispatchers.IO){
+//                        }
+//                    }
                 }, text = { Text("삭제") })
-//                DropdownMenuItem(onClick = {
-//                }, text = {Text("추가")})
             }
         }
     }

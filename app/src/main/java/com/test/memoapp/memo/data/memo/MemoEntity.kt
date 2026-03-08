@@ -14,15 +14,26 @@ data class MemoEntity(
 
     val title:String,
     val content: String = "",
-
     // 마지막 수정 시간
     val lastModifyTime : Long = System.currentTimeMillis(),
     // 일정 시간
     val scheduleTime : Long = 0L,
 //    val memoType : String,
     val isDelete : Boolean = false,
-    val needSync : Boolean = false
-)
+    val isSync : Boolean = false
+) {
+    fun toDto(userId : String) : MemoDto {
+        return MemoDto(
+            memoId = memoId,
+            userId = userId,
+            title = title,
+            content = content,
+            lastModifyTime = lastModifyTime,
+            scheduleTime = scheduleTime,
+            isDeleted = isDelete
+        )
+    }
+}
 
 enum class MemoType(val value : String) {
     Default("D"), Schedule("S") , Todo("T")

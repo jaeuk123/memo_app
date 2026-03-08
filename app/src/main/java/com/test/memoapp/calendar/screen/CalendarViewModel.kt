@@ -5,8 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.test.memoapp.core.Util.DateFormatUtils
 import com.test.memoapp.memo.data.memo.MemoEntity
-import com.test.memoapp.memo.data.MemoRepository
+import com.test.memoapp.memo.data.memo.MemoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -17,7 +18,6 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.YearMonth
 import java.time.ZoneId
-import javax.inject.Inject
 
 
 @HiltViewModel
@@ -101,8 +101,6 @@ class CalendarViewModel @Inject constructor(
                         LocalTime.MAX
                     )
                 )
-
-                println("currentMonth = ${currentMonth.value}")
             }
 
             is EventAction.selectDay -> {

@@ -22,13 +22,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.test.memoapp.core.navigatiton.BottomNavItem
+import com.test.memoapp.core.navigatiton.bottomNavItem
 
 @Composable
-fun MainScreenBottomBar(navController : NavHostController) {
+fun MainScreenBottomBar(navController: NavHostController) {
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+
     BottomAppBar(
         contentPadding = PaddingValues(0.dp),
         windowInsets = WindowInsets.navigationBars
@@ -41,51 +49,29 @@ fun MainScreenBottomBar(navController : NavHostController) {
                 .background(color = Color.White),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            BottomNavItemView(
-                modifier = Modifier.weight(1f),
-                imageVector = BottomNavItem.Home.icon,
-                isSelected = (nowRoute == BottomNavItem.Home.route),
-                navigate = {
-                    navController.navigate(BottomNavItem.Home.route){
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
+            bottomNavItem.forEach { bottomNavItem ->
+                val isSelected = currentDestination?.hierarchy?.any { destination ->
+                    destination.hasRoute(bottomNavItem.route::class)
+                } == true
+
+                BottomNavItemView(
+                    modifier = Modifier.weight(1f),
+                    imageVector = bottomNavItem.icon,
+                    isSelected = isSelected,
+                    text = bottomNavItem.title,
+                    navigate = {
+                        if (!isSelected) {
+                            navController.navigate(bottomNavItem.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
                         }
-                        restoreState = true
                     }
-                    nowRoute = BottomNavItem.Home.route
-                },
-                text = BottomNavItem.Home.title
-            )
-            BottomNavItemView(
-                modifier = Modifier.weight(1f),
-                imageVector = BottomNavItem.Calendar.icon,
-                isSelected = (nowRoute == BottomNavItem.Calendar.route),
-                navigate = {
-                    navController.navigate(BottomNavItem.Calendar.route){
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-                        restoreState = true
-                    }
-                    nowRoute = BottomNavItem.Calendar.route
-                },
-                text = BottomNavItem.Calendar.title
-            )
-            BottomNavItemView(
-                modifier = Modifier.weight(1f),
-                imageVector = BottomNavItem.Settings.icon,
-                isSelected = (nowRoute == BottomNavItem.Settings.route),
-                navigate = {
-                    navController.navigate(BottomNavItem.Settings.route){
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-                        restoreState = true
-                    }
-                    nowRoute = BottomNavItem.Settings.route
-                },
-                text = BottomNavItem.Settings.title
-            )
+                )
+            }
         }
     }
 }
@@ -94,7 +80,7 @@ fun MainScreenBottomBar(navController : NavHostController) {
 private fun BottomNavItemView(
     modifier: Modifier = Modifier,
     isSelected: Boolean,
-    navigate : () -> Unit,
+    navigate: () -> Unit,
     imageVector: ImageVector,
     text: String
 ) {

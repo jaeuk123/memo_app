@@ -1,5 +1,6 @@
 package com.test.memoapp.settings.sign_up
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,21 +13,36 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.test.memoapp.core.component.topbar.TitleTopBar
+import com.test.memoapp.settings.login.LoginEvent
 
 @Composable
 fun SignUpScreen(viewModel: SignUpViewModel = hiltViewModel(), navBackPress: () -> Unit) {
+
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        viewModel.eventFlow.collect { event ->
+            when (event) {
+                is SignUpEvent.ShowError -> {
+                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                }
+                SignUpEvent.SuccessEvent -> navBackPress.invoke()
+            }
+        }
+    }
     SignUpContents({ email, password -> viewModel.signUp(email, password) }, navBackPress)
 }
 
@@ -69,5 +85,5 @@ private fun SignUpContents(signUp: (String, String) -> Unit, navBackPress: () ->
 @Composable
 @Preview
 private fun LoginScreenPreview() {
-    SignUpContents({ email, password -> },{})
+    SignUpContents({ email, password -> }, {})
 }

@@ -9,4 +9,5 @@ sealed interface SettingsRoute : Route {
     @Serializable data object SettingsHome : SettingsRoute
     @Serializable data object Login : SettingsRoute
     @Serializable data object SignUp : SettingsRoute
+    @Serializable data object Sync : SettingsRoute
 }

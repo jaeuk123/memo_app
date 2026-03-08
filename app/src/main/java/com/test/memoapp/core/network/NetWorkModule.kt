@@ -1,15 +1,20 @@
 package com.test.memoapp.core.network
 
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.skydoves.sandwich.retrofit.adapters.ApiResponseCallAdapterFactory
 import com.test.memoapp.BuildConfig
 import com.test.memoapp.core.data.TokenManager
 import com.test.memoapp.memo.network.MemoApiService
+import com.test.memoapp.memo.network.MemoTagApiService
+import com.test.memoapp.memo.network.TagApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -73,5 +78,17 @@ object NetWorkModule {
     @Singleton
     fun provideMemoApiService(retrofit: Retrofit) : MemoApiService {
         return retrofit.create(MemoApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTagApiService(retrofit: Retrofit) : TagApiService {
+        return retrofit.create(TagApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMemoTagApiService(retrofit: Retrofit) : MemoTagApiService {
+        return retrofit.create(MemoTagApiService::class.java)
     }
 }

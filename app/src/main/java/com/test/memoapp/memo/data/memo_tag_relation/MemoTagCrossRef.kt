@@ -5,8 +5,10 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Junction
 import androidx.room.Relation
+import com.google.gson.annotations.SerializedName
 import com.test.memoapp.memo.data.tag.TagEntity
 import com.test.memoapp.memo.data.memo.MemoEntity
+import kotlinx.serialization.SerialName
 
 @Entity(
     tableName="memo_tag_cross_ref",
@@ -31,8 +33,25 @@ data class MemoTagCrossRef(
     val memoId: String,
     val tagId: String,
     val isDelete : Boolean = false,
-    val needSync : Boolean = false
+    val isSync : Boolean = false
 )
+
+data class MemoTagCrossDto(
+    @SerializedName("user_id")
+    val userId : String,
+    @SerializedName("memo_id")
+    val memoId : String,
+    @SerializedName("tag_id")
+    val tagId : String
+) {
+    fun toEntity(isSync : Boolean) : MemoTagCrossRef {
+        return MemoTagCrossRef(
+            memoId = memoId,
+            tagId = tagId,
+            isSync = isSync,
+        )
+    }
+}
 
 
 

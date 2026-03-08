@@ -35,11 +35,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
     buildFeatures {
         buildConfig = true
@@ -75,10 +75,14 @@ dependencies {
     implementation("androidx.paging:paging-compose:$paging_version")
     implementation("androidx.room:room-paging:2.8.4")
 
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
+
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:3.0.0")
     // Retrofit Gson Converter (JSON 파싱용)
     implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
     // OkHttp (로그 확인 및 타임아웃 설정용)
     implementation("com.squareup.okhttp3:okhttp:5.3.2")
@@ -112,6 +116,7 @@ dependencies {
     ksp(libs.hilt.compiler)
     ksp(libs.androidx.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
+    implementation("androidx.hilt:hilt-work:1.2.0")
 
     // ⭐️ ComposeIcon 라이브러리
     implementation(libs.androidx.compose.material.icons.core)

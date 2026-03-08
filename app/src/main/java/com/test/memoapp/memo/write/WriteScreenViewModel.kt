@@ -5,13 +5,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.test.memoapp.core.Util.DateConvertType
 import com.test.memoapp.core.Util.DateFormatUtils
-import com.test.memoapp.memo.data.memo.MemoEntity
-import com.test.memoapp.memo.data.MemoRepositoryImpl
-import com.test.memoapp.memo.data.memo_tag_relation.MemoTagCrossRef
+import com.test.memoapp.memo.data.memo.MemoDto
+import com.test.memoapp.memo.data.memo.MemoRepositoryImpl
+import com.test.memoapp.memo.data.memo_tag_relation.MemoTagCrossSaveUseCase
 import com.test.memoapp.memo.data.memo_tag_relation.MemoTagRepository
 import com.test.memoapp.memo.data.tag.TagEntity
 import com.test.memoapp.memo.data.tag.TagRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,7 +24,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.LocalTime
-import javax.inject.Inject
 
 @HiltViewModel
 class WriteScreenViewModel @Inject constructor(
@@ -31,6 +31,7 @@ class WriteScreenViewModel @Inject constructor(
     private val memoRepository: MemoRepositoryImpl,
     private val memoTagRepository: MemoTagRepository,
     private val tagRepository: TagRepository,
+    private val memoTagCrossSaveUseCase : MemoTagCrossSaveUseCase
 ) : ViewModel() {
     val title = savedStateHandle.getStateFlow(key = "title", initialValue = "")
     val scheduleDate = savedStateHandle.getStateFlow("date", System.currentTimeMillis())
@@ -137,32 +138,33 @@ class WriteScreenViewModel @Inject constructor(
     }
 
     suspend fun saveMemo() {
+        println(" saveMemo EVENT ON")
         var saveMemoId: String
         if (scheduleOption.value) {
             val dateTime = LocalDateTime.of(
-                DateFormatUtils.convertLongToDate(scheduleDate.value!!),
+                DateFormatUtils.convertLongToDate(scheduleDate.value),
                 scheduleTime.value
             )
-            val memoEntity = MemoEntity(
+            val memoDto = MemoDto(
                 title = title.value,
                 content = content.value,
                 scheduleTime = DateFormatUtils.convertLocalDateTimeToLong(dateTime),
             )
             if (loadMemoId == null) {
-                saveMemoId = memoEntity.memoId
+                saveMemoId = memoDto.memoId
                 memoRepository.saveMemo(
-                    memoEntity
+                    memoDto
                 )
             } else {
                 saveMemoId = loadMemoId
                 memoRepository.updateMemo(
-                    memoEntity.copy(
+                    memoDto.copy(
                         memoId = saveMemoId
                     )
                 )
             }
         } else {
-            val memoEntity = MemoEntity(
+            val memoEntity = MemoDto(
                 title = title.value,
                 content = content.value,
             )
@@ -178,14 +180,7 @@ class WriteScreenViewModel @Inject constructor(
         }
 
         if (selectTags.value.isNotEmpty()) {
-            selectTags.value.forEach { tagId ->
-                memoTagRepository.insertMemoTagCrossRef(
-                    crossRef = MemoTagCrossRef(
-                        tagId = tagId,
-                        memoId = saveMemoId
-                    )
-                )
-            }
+            memoTagCrossSaveUseCase(selectTags.value,saveMemoId)
         }
     }
 }

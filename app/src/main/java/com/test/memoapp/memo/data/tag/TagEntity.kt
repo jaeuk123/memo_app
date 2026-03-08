@@ -13,5 +13,5 @@ data class TagEntity(
     val tagName: String,
 
     val isDelete : Boolean = false,
-    val needSync : Boolean = false
+    val isSync : Boolean = false
 )
