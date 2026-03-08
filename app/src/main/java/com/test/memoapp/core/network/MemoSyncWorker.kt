@@ -24,7 +24,7 @@ class MemoSyncWorker @AssistedInject constructor(
         var currentOffset = 0
 
         try {
-            while (true) {
+            while (!isStopped) {
                 val response = memoRepository.getSyncMemo(pageSize, currentOffset)
                 if (response.isSuccessful) {
                     val data = response.body()
@@ -39,8 +39,7 @@ class MemoSyncWorker @AssistedInject constructor(
                         memoRepository.syncMemoToLocal(memoList)
                     }
                 } else {
-                    Result.failure()
-                    break
+                    if (runAttemptCount < 3) Result.retry() else Result.failure()
                 }
             }
             Result.success()
